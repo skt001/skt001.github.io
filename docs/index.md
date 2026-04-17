@@ -1,12 +1,14 @@
 ---
-title: Raspberry Pi ドキュメント公開トップ
+title: Raspberry Pi Documentation
 ---
 
-# Raspberry Pi ドキュメント公開トップ
+# Raspberry Pi Documentation
 
-以下は本リポジトリで公開している手順書です。
+This repository contains Raspberry Pi guides and patch documentation.
 
-- [Bonsai (llama.cpp) Raspberry Pi 5 最適化手順 v2](bonsai-crosscompile-rpi5.md)
-- [Raspberry Pi 監視 完全手順書](pi-stats-manual.md)
+- [Bonsai (llama.cpp) Raspberry Pi 5 Optimization Guide v2](en/bonsai-crosscompile-rpi5.md)
+- [Raspberry Pi Monitoring Complete Manual](en/pi-stats-manual.md)
+- [GPi Case 2 CM5 Patch Overview](en/gpicase2-cm5-patch.md)
+- [日本語版はこちら](ja/index.md)
 
-各ページから手順を閲覧できます。
+The documentation is organized into English and Japanese sections. See the English index above and the Japanese index for the Japanese section.

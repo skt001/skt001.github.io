@@ -1,5 +1,5 @@
 ---
-title: Bonsai (llama.cpp) Raspberry Pi 5 最適化手順 v2
+title: Bonsai (llama.cpp) Raspberry Pi 5 Optimization Guide v2
 ---
 
 # Bonsai (llama.cpp) Raspberry Pi 5 最適化手順 v2
@@ -119,5 +119,4 @@ scp model.gguf pi@<IP>:~/
   --port 8080 \
   --threads $(nproc)
 ```
-
 ---
