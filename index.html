@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>skt001 - 公開リポジトリ概要</title>
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --text: #212529;
+      --card: #ffffff;
+      --border: #dee2e6;
+      --link: #0d6efd;
+      --accent: #198754;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121212;
+        --text: #e9ecef;
+        --card: #1e1e1e;
+        --border: #333;
+        --link: #6ea8fe;
+        --accent: #75b798;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      text-align: center;
+    }
+    header h1 { margin: 0 0 0.3rem; font-size: 1.6rem; }
+    header p { margin: 0; opacity: 0.8; }
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+    h2 {
+      margin-top: 2.5rem;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 0.3rem;
+      font-size: 1.35rem;
+    }
+    .repo-list {
+      display: grid;
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+    .repo-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+    }
+    .repo-card h3 {
+      margin: 0 0 0.4rem;
+      font-size: 1.1rem;
+    }
+    .repo-card h3 a { color: var(--link); text-decoration: none; }
+    .repo-card h3 a:hover { text-decoration: underline; }
+    .repo-card p { margin: 0.3rem 0; font-size: 0.95rem; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      background: var(--border);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      margin-right: 0.3rem;
+    }
+    .guide {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+    }
+    .guide ol, .guide ul { padding-left: 1.4rem; }
+    .guide code {
+      background: var(--border);
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+    .guide pre {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+    }
+    .demo-box {
+      background: var(--card);
+      border: 2px dashed var(--accent);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      text-align: center;
+    }
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover { opacity: 0.9; }
+    #worker-result {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      background: var(--bg);
+      border-radius: 4px;
+      min-height: 2.5rem;
+      font-family: monospace;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.85rem;
+      opacity: 0.7;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>skt001 公開リポジトリ概要</h1>
+    <p>個人の実験・ツール置き場。GitHub Pages / Cloudflare Pages 両対応のデモページ。</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>このサイトについて</h2>
+      <p>
+        このページは <a href="https://github.com/skt001/skt001.github.io">skt001.github.io</a> リポジトリをソースに、
+        GitHub Pages と Cloudflare Pages の両方から配信できるようにした静的ページです。
+        下の「公開リポジトリ一覧」に機能概要とリンクをまとめ、
+        さらに Cloudflare Pages / Workers の簡単な実験手順を記載しています。
+      </p>
+      <p>
+        既存の Raspberry Pi 関連手順書はこちら →
+        <a href="./docs/ja/">日本語ドキュメント</a> /
+        <a href="./docs/en/">English docs</a>
+      </p>
+    </section>
+
+    <section>
+      <h2>公開リポジトリ一覧</h2>
+      <div class="repo-list">
+
+        <div class="repo-card">
+          <h3><a href="https://github.com/skt001/skt001.github.io" target="_blank" rel="noopener">skt001.github.io</a></h3>
+          <p>本サイト。Raspberry Pi 関連の手順書・パッチ解説を Markdown で公開。</p>
+          <span class="tag">ドキュメント</span><span class="tag">GitHub Pages</span>
+        </div>
+
+        <div class="repo-card">
+          <h3><a href="https://github.com/skt001/mame-explorer" target="_blank" rel="noopener">mame-explorer</a></h3>
+          <p>MAME の -listxml と Software List XML をキーボード操作で探索する CUI ツール。Arcade / Software List を単一ツリーで閲覧。CHD モードあり。stdlib のみ。</p>
+          <span class="tag">Python</span><span class="tag">CUI</span><span class="tag">MAME</span>
+        </div>
+
+        <div class="repo-card">
+          <h3><a href="https://github.com/skt001/cross-folder-media-viewer" target="_blank" rel="noopener">cross-folder-media-viewer</a></h3>
+          <p>複数フォルダを横断して写真・動画を閲覧する静的 Web ビューア。フォルダ名・種類・拡張子でフィルタ可能。NAS 等で HTTP 配信して使う想定。</p>
+          <span class="tag">HTML</span><span class="tag">静的</span><span class="tag">WIP</span>
+        </div>
+
+        <div class="repo-card">
+          <h3><a href="https://github.com/skt001/GPiCase2-CM5-Patch" target="_blank" rel="noopener">GPiCase2-CM5-Patch</a></h3>
+          <p>RetroFlag GPi Case 2 の Raspberry Pi CM5 対応パッチ集（実験的）。boot 設定・SafeShutdown・テーマ・音声プロファイル修正を含む。</p>
+          <span class="tag">Shell</span><span class="tag">Raspberry Pi</span><span class="tag">WIP</span>
+        </div>
+
+        <div class="repo-card">
+          <h3><a href="https://github.com/skt001/pixel-chr-studio" target="_blank" rel="noopener">pixel-chr-studio</a></h3>
+          <p>ブラウザ完結の NES Character ROM (CHR) エディタ。8x8 タイルと 16x16 メタタイル編集、反転・回転・Undo/Redo、複数形式エクスポート対応。</p>
+          <span class="tag">HTML</span><span class="tag">NES</span><span class="tag">Webアプリ</span>
+        </div>
+
+        <div class="repo-card">
+          <h3><a href="https://github.com/skt001/rom-checker" target="_blank" rel="noopener">rom-checker</a></h3>
+          <p>ROM 管理用 Python ツール集。No-Intro DAT との Have/Miss 比較と、各種ROMヘッダ解析レポート生成。</p>
+          <span class="tag">Python</span><span class="tag">ROM</span>
+        </div>
+
+        <div class="repo-card">
+          <h3><a href="https://github.com/skt001/MediaOrganizer" target="_blank" rel="noopener">MediaOrganizer</a></h3>
+          <p>Windows 向けバッチツール。ExifTool + czkawka を使い、写真・動画を日付・撮影場所・機種で自動整理。重複除去も可能。</p>
+          <span class="tag">Batch</span><span class="tag">Windows</span>
+        </div>
+
+        <div class="repo-card">
+          <h3><a href="https://github.com/skt001/php-media-browser" target="_blank" rel="noopener">php-media-browser</a></h3>
+          <p>単一ファイルの PHP メディアブラウザ。画像・動画のサムネイル表示、Lightbox、統計ビュー。認証なしなので公開サーバでは注意。</p>
+          <span class="tag">PHP</span><span class="tag">単一ファイル</span>
+        </div>
+
+        <div class="repo-card">
+          <h3><a href="https://github.com/skt001/gitDrive" target="_blank" rel="noopener">gitDrive</a></h3>
+          <p>Git ベースの最小スナップショットツール。個人用プライベートリポジトリ向け。force push を前提とした破壊的設計なので共有リポジトリには使わないこと。</p>
+          <span class="tag">Shell</span><span class="tag">個人用</span>
+        </div>
+
+      </div>
+    </section>
+
+    <section>
+      <h2>Cloudflare Pages の接続手順（無料枠）</h2>
+      <div class="guide">
+        <p>このリポジトリを Cloudflare Pages に接続するだけで、GitHub Pages と並行して配信できます。衝突は起きません。</p>
+        <ol>
+          <li>Cloudflare ダッシュボードにログイン → <strong>Workers & Pages</strong> → <strong>Create</strong> → <strong>Pages</strong> → <strong>Connect to Git</strong></li>
+          <li>GitHub アカウントを連携し、<code>skt001/skt001.github.io</code> を選択</li>
+          <li>設定例：
+            <ul>
+              <li>Production branch: <code>main</code></li>
+              <li>Build command: （空欄でOK。静的HTML/Markdownのみの場合）</li>
+              <li>Build output directory: <code>/</code>（リポジトリルート）</li>
+            </ul>
+          </li>
+          <li>Save and Deploy。完了すると <code>https://xxxx.pages.dev</code> のURLが発行される</li>
+          <li>以降、main への push で自動デプロイされる</li>
+        </ol>
+        <p>カスタムドメインを使う場合は Cloudflare DNS で CNAME を設定し、Pages 側でドメインを追加すればよい。</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Cloudflare Workers 簡単な作り方と試用</h2>
+      <div class="guide">
+        <p>無料枠で動く最小の Worker を作り、このページから呼び出せるようにする手順です。</p>
+        <ol>
+          <li>Cloudflare ダッシュボード → <strong>Workers & Pages</strong> → <strong>Create</strong> → <strong>Worker</strong></li>
+          <li>名前を適当に（例: <code>hello-skt</code>）付けて Deploy</li>
+          <li>出てきたコードを以下のように書き換えて Save and Deploy</li>
+        </ol>
+        <pre>export default {
+  async fetch(request) {
+    const url = new URL(request.url);
+    const name = url.searchParams.get("name") || "World";
+    const data = {
+      message: `こんにちは、${name}さん！`,
+      time: new Date().toISOString(),
+      worker: "hello-skt"
+    };
+    return new Response(JSON.stringify(data, null, 2), {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      }
+    });
+  }
+};</pre>
+        <p>デプロイ後、Workers のURL（例: <code>https://hello-skt.あなたのサブドメイン.workers.dev</code>）が発行される。</p>
+        <p>下の「試す」ボタンの URL を自分の Worker URL に書き換えてから実行すれば、このページから直接呼べる。</p>
+      </div>
+
+      <div class="demo-box">
+        <p><strong>Workers 試用デモ</strong></p>
+        <p>下の入力欄に Worker のベースURLを入れて「呼び出す」を押す。</p>
+        <p>
+          <input type="text" id="worker-url" placeholder="https://hello-skt.xxxx.workers.dev" style="width:90%;max-width:420px;padding:0.4rem;">
+        </p>
+        <p>
+          <input type="text" id="worker-name" placeholder="名前（任意）" style="width:90%;max-width:200px;padding:0.4rem;">
+        </p>
+        <button onclick="callWorker()">呼び出す</button>
+        <div id="worker-result">ここに結果が表示されます</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>補足・注意</h2>
+      <ul>
+        <li>GitHub Pages と Cloudflare Pages は同じリポジトリをソースにしても独立して動く。</li>
+        <li>Workers の無料枠は1日あたり一定リクエスト数まで。個人の実験用途では通常足りる。</li>
+        <li>CORS を通すために Worker 側で <code>Access-Control-Allow-Origin: *</code> を付けている。本番で公開する場合はオリジンを制限した方がよい。</li>
+        <li>既存の docs/ja や docs/en のドキュメントはそのまま残してある。リンク切れが出たらパスを調整すること。</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    skt001 の実験ページ · GitHub Pages + Cloudflare Pages 両対応デモ
+  </footer>
+
+  <script>
+    async function callWorker() {
+      const base = document.getElementById("worker-url").value.trim();
+      const name = document.getElementById("worker-name").value.trim() || "World";
+      const resultEl = document.getElementById("worker-result");
+
+      if (!base) {
+        resultEl.textContent = "Worker の URL を入力してください。";
+        return;
+      }
+
+      resultEl.textContent = "呼び出し中…";
+      try {
+        const url = new URL(base);
+        url.searchParams.set("name", name);
+        const res = await fetch(url.toString());
+        const text = await res.text();
+        resultEl.textContent = `Status: ${res.status}\n\n${text}`;
+      } catch (err) {
+        resultEl.textContent = "エラー: " + err.message + "\n\nCORS や URL の誤り、Worker 未デプロイの可能性あり。";
+      }
+    }
+  </script>
+</body>
+</html>
