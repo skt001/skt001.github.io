@@ -40,6 +40,16 @@
     }
     header h1 { margin: 0 0 0.3rem; font-size: 1.6rem; }
     header p { margin: 0; opacity: 0.8; }
+    .site-switch {
+      margin-top: 0.8rem;
+      font-size: 0.95rem;
+    }
+    .site-switch a {
+      color: var(--link);
+      text-decoration: none;
+      margin: 0 0.4rem;
+    }
+    .site-switch a:hover { text-decoration: underline; }
     main {
       max-width: 860px;
       margin: 0 auto;
@@ -139,7 +149,12 @@
 <body>
   <header>
     <h1>skt001 公開リポジトリ概要</h1>
-    <p>個人の実験・ツール置き場。GitHub Pages / Cloudflare Pages 両対応のデモページ。</p>
+    <p>個人の実験・ツール置き場。GitHub Pages / Cloudflare 両対応のデモページ。</p>
+    <div class="site-switch">
+      <strong>現在の配信:</strong> Cloudflare版
+      &nbsp;|&nbsp;
+      <a href="https://skt001.github.io/">GitHub Pages版を見る</a>
+    </div>
   </header>
 
   <main>
@@ -147,7 +162,7 @@
       <h2>このサイトについて</h2>
       <p>
         このページは <a href="https://github.com/skt001/skt001.github.io">skt001.github.io</a> リポジトリをソースに、
-        GitHub Pages と Cloudflare Pages の両方から配信できるようにした静的ページです。
+        GitHub Pages と Cloudflare の両方から配信できるようにした静的ページです。
         下の「公開リポジトリ一覧」に機能概要とリンクをまとめ、
         さらに Cloudflare Pages / Workers の簡単な実験手順を記載しています。
       </p>
@@ -220,23 +235,21 @@
     </section>
 
     <section>
-      <h2>Cloudflare Pages の接続手順（無料枠）</h2>
+      <h2>Cloudflare Pages / Workers の接続手順（無料枠）</h2>
       <div class="guide">
-        <p>このリポジトリを Cloudflare Pages に接続するだけで、GitHub Pages と並行して配信できます。衝突は起きません。</p>
+        <p>このリポジトリを Cloudflare に接続するだけで、GitHub Pages と並行して配信できます。衝突は起きません。</p>
         <ol>
-          <li>Cloudflare ダッシュボードにログイン → <strong>Workers & Pages</strong> → <strong>Create</strong> → <strong>Pages</strong> → <strong>Connect to Git</strong></li>
-          <li>GitHub アカウントを連携し、<code>skt001/skt001.github.io</code> を選択</li>
-          <li>設定例：
+          <li>Cloudflare ダッシュボードにログイン → <strong>Workers & Pages</strong> → <strong>Create</strong></li>
+          <li>Pages または Workers（Static Assets）で GitHub リポジトリ <code>skt001/skt001.github.io</code> を接続</li>
+          <li>設定例（Pagesの場合）：
             <ul>
               <li>Production branch: <code>main</code></li>
-              <li>Build command: （空欄でOK。静的HTML/Markdownのみの場合）</li>
+              <li>Build command: （空欄でOK）</li>
               <li>Build output directory: <code>/</code>（リポジトリルート）</li>
             </ul>
           </li>
-          <li>Save and Deploy。完了すると <code>https://xxxx.pages.dev</code> のURLが発行される</li>
-          <li>以降、main への push で自動デプロイされる</li>
+          <li>Deploy。完了すると <code>*.pages.dev</code> または <code>*.workers.dev</code> のURLが発行される</li>
         </ol>
-        <p>カスタムドメインを使う場合は Cloudflare DNS で CNAME を設定し、Pages 側でドメインを追加すればよい。</p>
       </div>
     </section>
 
@@ -267,7 +280,7 @@
   }
 };</pre>
         <p>デプロイ後、Workers のURL（例: <code>https://hello-skt.あなたのサブドメイン.workers.dev</code>）が発行される。</p>
-        <p>下の「試す」ボタンの URL を自分の Worker URL に書き換えてから実行すれば、このページから直接呼べる。</p>
+        <p>下の入力欄に自分の Worker URL を入れて実行すれば、このページから直接呼べる。</p>
       </div>
 
       <div class="demo-box">
@@ -287,16 +300,17 @@
     <section>
       <h2>補足・注意</h2>
       <ul>
-        <li>GitHub Pages と Cloudflare Pages は同じリポジトリをソースにしても独立して動く。</li>
+        <li>GitHub Pages と Cloudflare は同じリポジトリをソースにしても独立して動く。</li>
         <li>Workers の無料枠は1日あたり一定リクエスト数まで。個人の実験用途では通常足りる。</li>
         <li>CORS を通すために Worker 側で <code>Access-Control-Allow-Origin: *</code> を付けている。本番で公開する場合はオリジンを制限した方がよい。</li>
-        <li>既存の docs/ja や docs/en のドキュメントはそのまま残してある。リンク切れが出たらパスを調整すること。</li>
+        <li>既存の docs/ja や docs/en のドキュメントはそのまま残してある。</li>
       </ul>
     </section>
   </main>
 
   <footer>
-    skt001 の実験ページ · GitHub Pages + Cloudflare Pages 両対応デモ
+    skt001 の実験ページ · GitHub Pages + Cloudflare 両対応デモ<br>
+    <a href="https://skt001.github.io/">GitHub Pages版</a>
   </footer>
 
   <script>

@@ -6,6 +6,8 @@ title: Raspberry Pi Documentation
 
 This repository contains Raspberry Pi guides and patch documentation.
 
+**別配信版**: [Cloudflare版（公開リポジトリ概要ページ）](https://skt001-github-io.skt001.workers.dev/)
+
 - [Bonsai (llama.cpp) Raspberry Pi 5 Optimization Guide v2](en/bonsai-crosscompile-rpi5.md)
 - [Raspberry Pi Monitoring Complete Manual](en/pi-stats-manual.md)
 - [GPi Case 2 CM5 Patch Overview](en/gpicase2-cm5-patch.md)
