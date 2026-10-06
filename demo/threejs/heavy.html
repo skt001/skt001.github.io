@@ -1,1 +1,316 @@
-{{heavy}}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>デモ: Three.js 水面シミュレーション (heavy)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #ffffff;
+    }
+
+    /* 全画面背景Canvas（z-index: 0） */
+    #water-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      display: block;
+    }
+
+    /* 前面UIコンテナ */
+    .ui-container {
+      position: relative;
+      z-index: 10;
+      max-width: 650px;
+      margin: 0 auto;
+      padding: 120px 20px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .glass-card {
+      background: rgba(5, 15, 35, 0.45);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 0 50px rgba(0, 212, 255, 0.25);
+      pointer-events: auto;
+    }
+
+    h1 {
+      font-size: 2.3rem;
+      margin-bottom: 16px;
+      color: #e0f7fc;
+      text-shadow: 0 0 25px rgba(0, 240, 255, 0.8);
+    }
+
+    p {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #a5f3fc;
+    }
+  </style>
+</head>
+<body>
+  <nav style="position:fixed;top:0;left:0;right:0;z-index:100;padding:0.5rem 1rem;background:rgba(0,0,0,0.7);font-size:0.85rem;color:#fff;">
+    <a href="../../index.html" style="color:#a5f3fc;">← トップに戻る</a>
+    &nbsp;|&nbsp;
+    <strong>デモページ</strong>
+  </nav>
+
+  <canvas id="water-canvas"></canvas>
+
+  <div class="ui-container">
+    <div class="glass-card">
+      <h1>デモ: 超高精細・極限水面シミュレーション (heavy)</h1>
+      <p>格子数300×300（90,000計算点）および6,000粒子の極小水しぶきによる極めて密度の高い高解像度物理モデルです。<br>マウス操作やクリックで繊細かつダイナミックな波紋が生成されます。</p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const canvas = document.getElementById('water-canvas');
+      if (!canvas || !window.THREE) return;
+
+      const scene = new THREE.Scene();
+
+      // --- 【極限ハイパラメータ設定】 ---
+      const GRID = 300;              // 300x300 = 90,000頂点の超高精細格子
+      const DAMPING = 0.992;         // 細かな干渉波を長く維持
+      const MAX_PARTICLES = 6000;    // 6,000粒子の極小しぶき
+
+      const BASE_VIEW_HEIGHT = 20;
+      let viewWidth = BASE_VIEW_HEIGHT;
+      let viewHeight = BASE_VIEW_HEIGHT;
+
+      // 正射影カメラ
+      const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 100);
+      camera.position.set(0, 25, 0);
+      camera.up.set(0, 0, -1);
+      camera.lookAt(0, 0, 0);
+
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+      // ディスプレイのネイティブ解像度をフル活用
+      renderer.setPixelRatio(window.devicePixelRatio || 1);
+
+      // 水面メッシュ（1x1平面を画面アスペクト比に拡縮）
+      const geometry = new THREE.PlaneGeometry(1, 1, GRID - 1, GRID - 1);
+      geometry.rotateX(-Math.PI / 2);
+
+      // 指定通りの正確な色と明るさ設定
+      const material = new THREE.MeshPhongMaterial({
+        color: 0x001128,
+        emissive: 0x000814,
+        specular: 0x00ffff,
+        shininess: 150,
+        flatShading: true
+      });
+
+      const waterMesh = new THREE.Mesh(geometry, material);
+      scene.add(waterMesh);
+
+      // 指定通りのライティング構造
+      scene.add(new THREE.AmbientLight(0x010d1a, 1.0));
+
+      const mainLight = new THREE.DirectionalLight(0x00ffff, 4.0);
+      mainLight.position.set(20, 30, 15);
+      scene.add(mainLight);
+
+      const subLight = new THREE.DirectionalLight(0x0044ff, 2.5);
+      subLight.position.set(-20, 25, -15);
+      scene.add(subLight);
+
+      // 全画面100%レイアウト追従
+      function updateLayout() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const aspect = w / h;
+
+        viewHeight = BASE_VIEW_HEIGHT;
+        viewWidth = BASE_VIEW_HEIGHT * aspect;
+
+        camera.left = -viewWidth / 2;
+        camera.right = viewWidth / 2;
+        camera.top = viewHeight / 2;
+        camera.bottom = -viewHeight / 2;
+        camera.updateProjectionMatrix();
+
+        waterMesh.scale.set(viewWidth, 1, viewHeight);
+        renderer.setSize(w, h);
+      }
+
+      // 物理計算データ構造（90,000要素）
+      const count = GRID * GRID;
+      let heightMap = new Float32Array(count);
+      let previousMap = new Float32Array(count);
+
+      // 超高解像度格子に最適化した打撃インパルス（影響半径を調整）
+      function injectImpulse(gx, gz, strength) {
+        const radius = 9; // 解像度高密度化に合わせて半径を最適化
+        for (let dx = -radius; dx <= radius; dx++) {
+          for (let dz = -radius; dz <= radius; dz++) {
+            const nx = gx + dx;
+            const nz = gz + dz;
+            if (nx >= 1 && nx < GRID - 1 && nz >= 1 && nz < GRID - 1) {
+              const dist = Math.sqrt(dx * dx + dz * dz);
+              if (dist <= radius) {
+                const factor = Math.cos((dist / radius) * (Math.PI / 2));
+                heightMap[nz * GRID + nx] += strength * factor;
+              }
+            }
+          }
+        }
+      }
+
+      // 大量極小水しぶきパーティクル（6,000個）
+      const particleGeo = new THREE.BufferGeometry();
+      const particlePositions = new Float32Array(MAX_PARTICLES * 3);
+      const particleVelocities = [];
+
+      for (let i = 0; i < MAX_PARTICLES; i++) {
+        particlePositions[i * 3] = 0;
+        particlePositions[i * 3 + 1] = -999;
+        particlePositions[i * 3 + 2] = 0;
+        particleVelocities.push(new THREE.Vector3());
+      }
+
+      particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+      const particleMat = new THREE.PointsMaterial({
+        color: 0xa0ffff,
+        size: 0.20, // 細かな水沫表現のためサイズを小さく
+        transparent: true,
+        opacity: 0.85,
+        blending: THREE.AdditiveBlending
+      });
+      const splashParticles = new THREE.Points(particleGeo, particleMat);
+      scene.add(splashParticles);
+
+      let pIndex = 0;
+      function spawnSplash(x, z, count = 100, power = 2.0) {
+        for (let i = 0; i < count; i++) {
+          const idx = (pIndex % MAX_PARTICLES) * 3;
+          particlePositions[idx] = x + (Math.random() - 0.5) * 1.5;
+          particlePositions[idx + 1] = 0.3;
+          particlePositions[idx + 2] = z + (Math.random() - 0.5) * 1.5;
+
+          particleVelocities[pIndex % MAX_PARTICLES].set(
+            (Math.random() - 0.5) * 9 * power,
+            (Math.random() * 11 + 6) * power,
+            (Math.random() - 0.5) * 9 * power
+          );
+          pIndex++;
+        }
+      }
+
+      // マウス・タッチ操作処理
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+      let isMouseDown = false;
+
+      function handlePointer(clientX, clientY, isClick = false) {
+        mouse.x = (clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObject(waterMesh);
+
+        if (intersects.length > 0) {
+          const point = intersects[0].point;
+          const gx = Math.floor(((point.x + viewWidth / 2) / viewWidth) * GRID);
+          const gz = Math.floor(((point.z + viewHeight / 2) / viewHeight) * GRID);
+
+          const strength = isMouseDown ? 20.0 : (isClick ? 50.0 : 7.0);
+          injectImpulse(gx, gz, strength);
+
+          if (isMouseDown || isClick) {
+            spawnSplash(point.x, point.z, isClick ? 150 : 40, isClick ? 2.3 : 1.3);
+          }
+        }
+      }
+
+      window.addEventListener('mousemove', (e) => handlePointer(e.clientX, e.clientY));
+      window.addEventListener('mousedown', (e) => {
+        isMouseDown = true;
+        handlePointer(e.clientX, e.clientY, true);
+      });
+      window.addEventListener('mouseup', () => isMouseDown = false);
+      window.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 0) handlePointer(e.touches[0].clientX, e.touches[0].clientY, true);
+      }, { passive: true });
+
+      window.addEventListener('resize', updateLayout);
+
+      updateLayout();
+
+      // 物理シミュレーションループ
+      function animate() {
+        requestAnimationFrame(animate);
+
+        // 高密度波動計算（90,000要素のループ処理）
+        for (let z = 1; z < GRID - 1; z++) {
+          for (let x = 1; x < GRID - 1; x++) {
+            const idx = z * GRID + x;
+            const wave = (
+              previousMap[idx - 1] +
+              previousMap[idx + 1] +
+              previousMap[idx - GRID] +
+              previousMap[idx + GRID]
+            ) / 2 - heightMap[idx];
+
+            heightMap[idx] = wave * DAMPING;
+          }
+        }
+
+        const pos = geometry.attributes.position;
+        for (let i = 0; i < count; i++) {
+          pos.setY(i, heightMap[i]);
+        }
+        let temp = previousMap;
+        previousMap = heightMap;
+        heightMap = temp;
+
+        pos.needsUpdate = true;
+        geometry.computeVertexNormals();
+
+        // 6,000パーティクル更新処理
+        const pPos = particleGeo.attributes.position;
+        for (let i = 0; i < MAX_PARTICLES; i++) {
+          if (pPos.getY(i) > -50) {
+            pPos.setX(i, pPos.getX(i) + particleVelocities[i].x * 0.016);
+            pPos.setY(i, pPos.getY(i) + particleVelocities[i].y * 0.016);
+            pPos.setZ(i, pPos.getZ(i) + particleVelocities[i].z * 0.016);
+
+            particleVelocities[i].y -= 18.0 * 0.016;
+
+            if (pPos.getY(i) < 0) {
+              pPos.setY(i, -999);
+            }
+          }
+        }
+        pPos.needsUpdate = true;
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    });
+  </script>
+</body>
+</html>

@@ -19,9 +19,250 @@
   </nav>
   <div id="app"></div>
   <script>
-    // NOTE: full original script retained in local patch; if truncated here, re-apply from local cross.html
-    const MAX_DISPLAY_THRESHOLD = 300;
-    console.log('Demo page loaded - full script should be restored from local if incomplete');
+    const MAX_DISPLAY_THRESHOLD = 300; // max item count to render as a gallery
+
+    function esc(s) {
+      return String(s)
+        .replace(/&/g, "&" + "amp;")
+        .replace(/</g, "&" + "lt;")
+        .replace(/>/g, "&" + "gt;")
+        .replace(/"/g, "&" + "quot;")
+        .replace(/'/g, "&" + "#39;");
+    }
+
+    // The index is an array of { "path": relative path as-is, "kind": "image" | "video", "ext": extension }.
+    // The viewer only builds HTML from the index; it never checks whether the file actually exists.
+    function toItem(entry) {
+      if (!entry || typeof entry.path !== "string") return null;
+      if (entry.kind !== "image" && entry.kind !== "video") return null;
+      const parts = entry.path.split("/");
+      if (parts.some((p) => p === "" || p === "." || p === "..")) return null; // relative paths only
+      const filename = parts[parts.length - 1];
+      let ext = typeof entry.ext === "string" ? entry.ext : "";
+      if (!ext) {
+        const dot = filename.lastIndexOf(".");
+        ext = dot > 0 && dot < filename.length - 1 ? filename.slice(dot + 1).toLowerCase() : "";
+      }
+      return { path: entry.path, folders: parts.slice(0, -1), filename, ext, kind: entry.kind, failed: false };
+    }
+
+    function parseIndex(data) {
+      if (!Array.isArray(data)) return [];
+      const seen = new Set();
+      const items = [];
+      for (const entry of data) {
+        const item = toItem(entry);
+        if (!item || seen.has(item.path)) continue;
+        seen.add(item.path);
+        items.push(item);
+      }
+      return items;
+    }
+
+    function encodePath(path) {
+      return path
+        .split('/')
+        .map(encodeURIComponent)
+        .join('/');
+    }
+
+    function folderFacets(items) {
+      const names = new Set();
+      for (const item of items) {
+        for (const name of item.folders) names.add(name);
+      }
+      return [...names].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+    }
+
+    function extFacets(items) {
+      const exts = new Set();
+      for (const item of items) exts.add(item.ext);
+      return [...exts].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+    }
+
+    // State: the item array plus a few toggles.
+    const state = {
+      items: null, // null: loading, []: empty data or error, [...]: data loaded
+      error: null, // set when the index could not be fetched or parsed
+      showImages: true,
+      showVideos: true,
+      hiddenExts: new Set(), // extensions to hide (e.g. the browser can't render them)
+      selectedFolders: [], // names that have been used to narrow (display only; filter is destructive)
+      forceShow: false, // render the gallery even past the 300-item threshold
+      hideFailed: false // hide items whose failed flag is set
+    };
+
+    // Items after applying the image/video toggle (candidates for the extension checkboxes)
+    function typeFilteredItems() {
+      if (!state.items) return [];
+      return state.items.filter((item) => {
+        if (!state.showImages && item.kind === "image") return false;
+        if (!state.showVideos && item.kind === "video") return false;
+        return true;
+      });
+    }
+
+    function filteredItems() {
+      return typeFilteredItems().filter((item) => {
+        if (state.hiddenExts.has(item.ext)) return false;
+        if (state.hideFailed && item.failed) return false;
+        return true;
+      });
+    }
+
+    function render() {
+      const app = document.getElementById("app");
+
+      if (state.items === null) {
+        app.innerHTML = `<main><p>Loading...</p></main>`;
+        return;
+      }
+
+      const shown = filteredItems();
+      const allFolders = folderFacets(shown);
+      const folders = allFolders.filter((f) => !state.selectedFolders.includes(f));
+      const exts = extFacets(typeFilteredItems());
+
+      const selectedList = state.selectedFolders.length
+        ? state.selectedFolders.map((f) => `<mark>${esc(f)}</mark>`).join(" ")
+        : "";
+
+      const folderButtons = folders.map((f) =>
+        `<button type="button" data-filter-folder="${esc(f)}">${esc(f)}</button>`
+      ).join(" ");
+
+      const extCheckboxes = exts.map((ext) =>
+        `<label><input type="checkbox" data-ext-toggle="${esc(ext)}" ${state.hiddenExts.has(ext) ? "" : "checked"}> ${esc(ext)}</label>`
+      ).join(" ");
+
+      // Gate content on the count: past the threshold, show only a warning and a force-show button.
+      let bodyContent = "";
+      if (shown.length > MAX_DISPLAY_THRESHOLD && !state.forceShow) {
+        bodyContent = `<p><strong>Too many items (${shown.length}). Select a folder to narrow it down.</strong></p>
+          <p><button type="button" data-force-show>Show anyway (${shown.length} items; this may be slow)</button></p>`;
+      } else if (shown.length > 0) {
+        bodyContent = shown.map((item) => {
+          const href = encodePath(item.path);
+          const kindLabel = item.kind === "video" ? "Movie" : "Photo";
+          const cap = `<figcaption><mark>${esc(kindLabel)}</mark><mark>${esc(item.ext)}</mark><mark>${esc(item.path)}</mark></figcaption>`;
+          const media = item.kind === "video"
+            ? `<video src="${href}#t=1" muted playsinline data-path="${esc(item.path)}"></video>`
+            : `<img src="${href}" alt="${esc(item.filename)}" loading="lazy" data-path="${esc(item.path)}">`;
+          return `<figure><a href="${href}" target="_blank" rel="noopener noreferrer">${media}</a>${cap}</figure>`;
+        }).join("");
+      } else if (state.error) {
+        bodyContent = `<p><strong>Could not load the media list: ${esc(state.error)}</strong></p>
+          <p><small>Ask the administrator to run the update script, and open this page over http(s) rather than file://.</small></p>`;
+      } else {
+        bodyContent = `<p>No matching files.</p>`;
+      }
+
+      const hideFailedBtn = (!state.hideFailed && shown.length > 0)
+        ? `<p><button type="button" data-hide-failed>Hide failed</button></p>`
+        : "";
+
+      app.innerHTML = `
+        <header>
+          <h1>Cross-Folder Media Viewer (${shown.length} items)</h1>
+          <div>
+            <label><input type="checkbox" data-type-toggle="image" ${state.showImages ? "checked" : ""}> Photo</label>
+            <label><input type="checkbox" data-type-toggle="video" ${state.showVideos ? "checked" : ""}> Movie</label>
+            <button type="button" data-reset>Reset</button>
+          </div>
+          ${selectedList ? `<div><small>Selected:</small> ${selectedList}</div>` : ""}
+          <hr>
+          <div>
+            ${folderButtons.length ? folderButtons : "<small>No more folders to filter by</small>"}
+          </div>
+          <div>
+            ${extCheckboxes.length ? extCheckboxes : "<small>No extensions to show</small>"}
+          </div>
+        </header>
+        <main>
+          ${hideFailedBtn}
+          ${bodyContent}
+        </main>`;
+
+      // Attach error handlers. Only set the in-memory failed flag; do not re-render here.
+      app.querySelectorAll("img[data-path], video[data-path]").forEach((el) => {
+        el.addEventListener("error", () => {
+          const path = el.dataset.path;
+          if (!path || !state.items) return;
+          const item = state.items.find((i) => i.path === path);
+          if (item) item.failed = true;
+        }, { once: true });
+      });
+    }
+
+    document.getElementById("app").addEventListener("click", (e) => {
+      const folderBtn = e.target.closest("[data-filter-folder]");
+      if (folderBtn) {
+        const targetFolder = folderBtn.dataset.filterFolder;
+        // Narrow state.items down to this folder's subset (destructive).
+        state.items = state.items.filter((item) => item.folders.includes(targetFolder));
+        if (!state.selectedFolders.includes(targetFolder)) {
+          state.selectedFolders.push(targetFolder);
+        }
+        render();
+        window.scrollTo(0, 0);
+        return;
+      }
+
+      const resetBtn = e.target.closest("[data-reset]");
+      if (resetBtn) {
+        boot();
+        return;
+      }
+
+      const forceShowBtn = e.target.closest("[data-force-show]");
+      if (forceShowBtn) {
+        state.forceShow = true;
+        render();
+        return;
+      }
+
+      const hideFailedBtn = e.target.closest("[data-hide-failed]");
+      if (hideFailedBtn) {
+        state.hideFailed = true;
+        render();
+      }
+    });
+
+    document.getElementById("app").addEventListener("change", (e) => {
+      const t = e.target;
+      if (!(t instanceof HTMLInputElement) || t.type !== "checkbox") return;
+      if (t.dataset.typeToggle === "image") {
+        state.showImages = t.checked;
+        render();
+      } else if (t.dataset.typeToggle === "video") {
+        state.showVideos = t.checked;
+        render();
+      } else if (t.dataset.extToggle) {
+        if (t.checked) state.hiddenExts.delete(t.dataset.extToggle);
+        else state.hiddenExts.add(t.dataset.extToggle);
+        render();
+      }
+    });
+
+    async function boot() {
+      state.items = null;
+      state.error = null;
+      state.selectedFolders = [];
+      state.forceShow = false;
+      state.hideFailed = false;
+      render();
+      try {
+        const res = await fetch("media.json", { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        state.items = parseIndex(await res.json());
+      } catch (err) {
+        state.items = [];
+        state.error = err instanceof Error ? err.message : String(err);
+      }
+      render();
+    }
+
+    boot();
   </script>
 </body>
 </html>
