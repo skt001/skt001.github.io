@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>skt001 - 公開リポジトリ概要</title>
   <link rel="stylesheet" href="./simple.min.css">
+  <style>
+    code {
+      background: #000;
+      color: #fff;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -24,12 +30,32 @@
         このページは <a href="https://github.com/skt001/skt001.github.io">skt001.github.io</a> リポジトリをソースに、
         GitHub Pages と Cloudflare の両方から配信できるようにした静的ページです。
       </p>
-      <p>
-        既存の Raspberry Pi 関連手順書はこちら →
-        <a href="./docs/ja/index.md">日本語ドキュメント (index.md)</a> /
-        <a href="./docs/en/index.md">English docs (index.md)</a>
-      </p>
-      <p><small>※ Cloudflare 側では Markdown が生テキストで表示されます。レンダリングされた HTML 版は GitHub Pages 側を参照してください。</small></p>
+    </section>
+
+    <section>
+      <h2>Raspberry Pi ドキュメント</h2>
+      <p>本リポジトリで公開している手順書・パッチ概要です。GitHub 上の各ファイルへのリンクです。</p>
+
+      <h3>日本語</h3>
+      <ul>
+        <li><a href="https://github.com/skt001/skt001.github.io/blob/main/docs/ja/index.md" target="_blank" rel="noopener">ドキュメント一覧（index）</a></li>
+        <li><a href="https://github.com/skt001/skt001.github.io/blob/main/docs/ja/bonsai-crosscompile-rpi5.md" target="_blank" rel="noopener">Bonsai (llama.cpp) Raspberry Pi 5 最適化手順 v2</a></li>
+        <li><a href="https://github.com/skt001/skt001.github.io/blob/main/docs/ja/pi-stats-manual.md" target="_blank" rel="noopener">Raspberry Pi 監視 完全手順書</a></li>
+        <li><a href="https://github.com/skt001/skt001.github.io/blob/main/docs/ja/gpicase2-cm5-patch.md" target="_blank" rel="noopener">GPi Case 2 CM5 パッチ概要</a></li>
+      </ul>
+
+      <h3>English</h3>
+      <ul>
+        <li><a href="https://github.com/skt001/skt001.github.io/blob/main/docs/en/index.md" target="_blank" rel="noopener">Documentation index</a></li>
+        <li><a href="https://github.com/skt001/skt001.github.io/blob/main/docs/en/bonsai-crosscompile-rpi5.md" target="_blank" rel="noopener">Bonsai (llama.cpp) Raspberry Pi 5 Optimization Guide v2</a></li>
+        <li><a href="https://github.com/skt001/skt001.github.io/blob/main/docs/en/pi-stats-manual.md" target="_blank" rel="noopener">Raspberry Pi Monitoring Complete Manual</a></li>
+        <li><a href="https://github.com/skt001/skt001.github.io/blob/main/docs/en/gpicase2-cm5-patch.md" target="_blank" rel="noopener">GPi Case 2 CM5 Patch Overview</a></li>
+      </ul>
+
+      <h3>共通</h3>
+      <ul>
+        <li><a href="https://github.com/skt001/skt001.github.io/blob/main/docs/index.md" target="_blank" rel="noopener">トップ index（日英リンク集）</a></li>
+      </ul>
     </section>
 
     <section>
@@ -108,29 +134,33 @@
     </section>
 
     <section>
-      <h2>Cloudflare Pages / Workers の接続手順（無料枠）</h2>
-      <p>このリポジトリを Cloudflare に接続するだけで、GitHub Pages と並行して配信できます。衝突は起きません。</p>
+      <h2>GitHub リポジトリを Cloudflare で公開する手順（無料枠）</h2>
+      <p>
+        GitHub 上の静的サイト（HTML / CSS / JS）を、Cloudflare Pages や Workers でも無料で公開できます。
+        以下の手順で登録すると、<code>*.pages.dev</code> や <code>*.workers.dev</code> の URL が発行され、GitHub Pages と並行して配信できます。
+      </p>
+
+      <h3>1. Cloudflare Pages で静的サイトを公開する</h3>
       <ol>
         <li>Cloudflare ダッシュボードにログイン → <strong>Workers & Pages</strong> → <strong>Create</strong></li>
-        <li>Pages または Workers（Static Assets）で GitHub リポジトリ <code>skt001/skt001.github.io</code> を接続</li>
-        <li>設定例（Pagesの場合）：
+        <li><strong>Pages</strong> を選び、GitHub リポジトリを接続する</li>
+        <li>設定例（ビルド不要の静的サイトの場合）：
           <ul>
-            <li>Production branch: <code>main</code></li>
-            <li>Build command: （空欄でOK）</li>
+            <li>Production branch: <code>main</code>（またはデフォルトブランチ）</li>
+            <li>Build command: 空欄でOK</li>
             <li>Build output directory: <code>/</code>（リポジトリルート）</li>
           </ul>
         </li>
-        <li>Deploy。完了すると <code>*.pages.dev</code> または <code>*.workers.dev</code> のURLが発行される</li>
+        <li>Deploy すると <code>https://プロジェクト名.pages.dev</code> のような URL が発行される</li>
       </ol>
-    </section>
+      <p>これで GitHub Pages と同じ内容が Cloudflare 側でも公開されます。両方が同時に動いても衝突しません。</p>
 
-    <section>
-      <h2>Cloudflare Workers 簡単な作り方と試用</h2>
-      <p>無料枠で動く最小の Worker を作り、このページから呼び出せるようにする手順です。</p>
+      <h3>2. Cloudflare Workers で簡単な API を公開する</h3>
+      <p>静的ファイルだけでなく、簡単なサーバーレス関数も無料枠で公開できます。</p>
       <ol>
         <li>Cloudflare ダッシュボード → <strong>Workers & Pages</strong> → <strong>Create</strong> → <strong>Worker</strong></li>
-        <li>名前を適当に（例: <code>hello-skt</code>）付けて Deploy</li>
-        <li>出てきたコードを以下のように書き換えて Save and Deploy</li>
+        <li>名前を付けて Deploy（例: <code>hello-demo</code>）</li>
+        <li>出てきたコードを次のように書き換えて Save and Deploy</li>
       </ol>
       <pre><code>export default {
   async fetch(request) {
@@ -139,7 +169,7 @@
     const data = {
       message: `こんにちは、${name}さん！`,
       time: new Date().toISOString(),
-      worker: "hello-skt"
+      worker: "hello-demo"
     };
     return new Response(JSON.stringify(data, null, 2), {
       headers: {
@@ -149,12 +179,13 @@
     });
   }
 };</code></pre>
-      <p>デプロイ後、Workers のURL（例: <code>https://hello-skt.あなたのサブドメイン.workers.dev</code>）が発行される。</p>
-      <p>下の入力欄に自分の Worker URL を入れて実行すれば、このページから直接呼べる。</p>
+      <p>デプロイ後、<code>https://hello-demo.あなたのサブドメイン.workers.dev</code> のような URL が発行されます。</p>
+      <p>ブラウザや他のページからこの URL を叩くと、JSON が返ってきます。</p>
 
-      <p><strong>Workers 試用デモ</strong></p>
+      <h3>3. このページから Worker を試す</h3>
+      <p>上の手順で作った Worker の URL を下に入力すると、実際に呼び出して結果を確認できます。</p>
       <p>
-        <label>Worker URL: <input type="text" id="worker-url" placeholder="https://hello-skt.xxxx.workers.dev" size="40"></label>
+        <label>Worker URL: <input type="text" id="worker-url" placeholder="https://hello-demo.xxxx.workers.dev" size="40"></label>
       </p>
       <p>
         <label>名前（任意）: <input type="text" id="worker-name" placeholder="名前" size="20"></label>
@@ -166,10 +197,9 @@
     <section>
       <h2>補足・注意</h2>
       <ul>
-        <li>GitHub Pages と Cloudflare は同じリポジトリをソースにしても独立して動く。</li>
-        <li>Workers の無料枠は1日あたり一定リクエスト数まで。個人の実験用途では通常足りる。</li>
-        <li>CORS を通すために Worker 側で <code>Access-Control-Allow-Origin: *</code> を付けている。本番で公開する場合はオリジンを制限した方がよい。</li>
-        <li>既存の docs/ja や docs/en のドキュメントはそのまま残してある。</li>
+        <li>GitHub Pages と Cloudflare は同じリポジトリをソースにしても独立して動きます。</li>
+        <li>Workers の無料枠には1日あたりのリクエスト上限があります。個人・小規模な用途では通常十分です。</li>
+        <li>上記サンプルでは CORS を通すために <code>Access-Control-Allow-Origin: *</code> を付けています。本番で公開する場合は、許可するオリジンを制限した方が安全です。</li>
       </ul>
     </section>
   </main>
