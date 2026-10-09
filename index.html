@@ -174,6 +174,67 @@
       <p>デプロイ後、<code>https://hello-demo.あなたのサブドメイン.workers.dev</code> のような URL が発行されます。</p>
       <p>ブラウザや他のページからこの URL を叩くと、JSON が返ってきます。</p>
 
+      <details>
+        <summary><strong>補足：Workers でできること・できないこと</strong></summary>
+
+        <h4>1. 役割と動作</h4>
+        <p><strong>できる</strong></p>
+        <ul>
+          <li>HTTP リクエストを受け取り、JSON や HTML を返す（Web API / サーバーレス関数）</li>
+          <li>V8 Isolate による極小のコールドスタート</li>
+          <li>ユーザーに近いエッジでの実行と自動スケール（プランごとの上限あり）</li>
+          <li><code>ReadableStream</code> によるストリーミングレスポンスや大容量ダウンロード</li>
+        </ul>
+        <p><strong>できない</strong></p>
+        <ul>
+          <li>常時起動の常駐プロセス（基本はリクエスト駆動。Cron / Durable Objects は別枠）</li>
+          <li>特定データセンター（例: 東京のみ）への物理固定（グローバル分散が前提。配置のヒントは限定的に可能）</li>
+        </ul>
+
+        <h4>2. バックエンド連携とデータ保存</h4>
+        <p><strong>できる</strong></p>
+        <ul>
+          <li>D1（SQLite）でのリレーショナルデータの保存・検索</li>
+          <li>Workers KV による高速な Key-Value の読み書き</li>
+          <li>R2 へのオブジェクト（画像・動画など）の保存と配信</li>
+          <li>Hyperdrive 経由の外部 PostgreSQL 等へのコネクションプーリング</li>
+          <li>D1 と R2 を組み合わせたハイブリッド設計</li>
+        </ul>
+        <p><strong>できない</strong></p>
+        <ul>
+          <li>R2 オブジェクトに対する SQL 検索や部分書き換え（オブジェクト単位の読み書き）</li>
+          <li>永続的な OS ディスクとしてのファイルシステム（ただし <code>nodejs_compat</code> 時は仮想 FS でリクエスト単位の <code>/tmp</code> 読み書きは可能。非永続・メモリ上限内）</li>
+        </ul>
+
+        <h4>3. プロキシと Server-to-Server 通信</h4>
+        <p><strong>できる</strong></p>
+        <ul>
+          <li><code>fetch()</code> による外部 API / 他サーバーへの HTTP(S) リクエスト（BFF 的な集約など）</li>
+          <li>URL やヘッダーを書き換えて転送するリバースプロキシ動作</li>
+          <li>TCP ソケット（connect API）による外部 DB 等への接続</li>
+          <li>Cloudflare Tunnel と組み合わせたプライベートネットワークへのアクセス</li>
+        </ul>
+        <p><strong>できない</strong></p>
+        <ul>
+          <li>送信元 IP を任意のローカル IP に偽装すること（外から見た送信元は Cloudflare の IP 帯）</li>
+          <li>標準の <code>fetch()</code> で TLS 証明書検証をスキップすること（自己署名はそのままでは不可。公的 CA・Cloudflare Origin CA、または Custom Origin Trust Store + <code>cots_on_external_fetch</code> で許可する手段はある）</li>
+        </ul>
+
+        <h4>4. OS レベルの処理とデータ加工</h4>
+        <p><strong>できる</strong></p>
+        <ul>
+          <li>JavaScript / TypeScript によるデータ処理・パース</li>
+          <li>WebAssembly（C / Rust / Go 等からコンパイル）の実行</li>
+          <li>標準の fetch API（multipart/form-data 等）によるバイナリの受け取り</li>
+        </ul>
+        <p><strong>できない</strong></p>
+        <ul>
+          <li>bash / zsh などのシェル実行</li>
+          <li><code>child_process</code>（exec / spawn）による別プロセス起動（ImageMagick 等のバイナリ直接実行）</li>
+          <li>OS ネイティブの共有ライブラリ（.so 等）の読み込み</li>
+        </ul>
+      </details>
+
       <h3>3. このページから Worker を試す</h3>
       <p>上の手順で作った Worker の URL を下に入力すると、実際に呼び出して結果を確認できます。</p>
       <p>
