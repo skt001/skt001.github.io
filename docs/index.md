@@ -6,7 +6,9 @@ title: Raspberry Pi Documentation
 
 Raspberry Pi 向け手順書・パッチ解説の公開ページです。
 
-**別配信版**: [Cloudflare版（公開リポジトリ概要ページ）](https://skt001-github-io.skt001.workers.dev/)
+**現在の配信:** GitHub Pages版
+&nbsp;|&nbsp;
+[Cloudflare版（概要・デモ）に戻る](https://skt001-github-io.skt001.workers.dev/)
 
 ## 日本語
 
