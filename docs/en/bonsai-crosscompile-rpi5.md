@@ -2,24 +2,23 @@
 title: Bonsai (llama.cpp) Raspberry Pi 5 Optimization Guide v2
 ---
 
-# Bonsai (llama.cpp) Raspberry Pi 5 最適化手順 v2
+# Bonsai (llama.cpp) Raspberry Pi 5 Optimization Guide v2
 
-## 概要
+## Overview
 
-WSLからRaspberry Pi 5向けにクロスコンパイルし、
-性能・安定性・実運用を考慮した構成にする。
-
----
-
-## 対象
-
-- ホスト: WSL (Ubuntu 24 x86_64)
-- ターゲット: Raspberry Pi 5 (Cortex-A76 / aarch64)
-- ベース: llama.cpp (Bonsai対応fork)
+Cross-compile for Raspberry Pi 5 from WSL, with a configuration focused on performance, stability, and real-world operation.
 
 ---
 
-## 1. ツールチェーン
+## Targets
+
+- Host: WSL (Ubuntu 24 x86_64)
+- Target: Raspberry Pi 5 (Cortex-A76 / aarch64)
+- Base: llama.cpp (Bonsai-capable fork)
+
+---
+
+## 1. Toolchain
 
 ```bash
 sudo apt update
@@ -28,10 +27,10 @@ sudo apt install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu cmake ninja-buil
 
 ---
 
-## 2. ソース取得
+## 2. Obtain source
 
-Bonsai対応 fork を使う場合は、対象リポジトリとブランチ／コミットを明示してください。
-ここでは例として `PrismML-Eng/llama.cpp` を使用します。
+When using a Bonsai-capable fork, specify the target repository and branch/commit explicitly.
+This guide uses `PrismML-Eng/llama.cpp` as an example.
 
 ```bash
 git clone https://github.com/PrismML-Eng/llama.cpp
@@ -40,7 +39,7 @@ cd llama.cpp
 
 ---
 
-## 3. ツールチェーン定義（Pi5最適化）
+## 3. Toolchain definition (Pi 5 optimized)
 
 ```bash
 cat > aarch64-rpi5.cmake << 'EOF'
@@ -59,13 +58,14 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 EOF
 ```
 
-ポイント：
-- dotprod有効化で推論高速化
-- FP16 + NEON最適化
+Key points:
+
+- Enable dotprod for faster inference
+- FP16 + NEON optimizations
 
 ---
 
-## 4. ビルド
+## 4. Build
 
 ```bash
 cmake -B build-rpi5 \
@@ -80,13 +80,13 @@ cmake -B build-rpi5 \
 cmake --build build-rpi5 -j$(nproc)
 ```
 
-- `-DGGML_NATIVE=OFF` : クロスコンパイル環境ではホストネイティブCPU命令を利用せず、ターゲット用ビルドを行う
-- `-DGGML_OPENMP=ON` : Pi5の複数コアで並列処理を有効にする
-- `-DGGML_CPU_AARCH64=ON` : ARM64向け最適化を有効化する
+- `-DGGML_NATIVE=OFF`: In a cross-compile environment, do not use host-native CPU instructions; build for the target
+- `-DGGML_OPENMP=ON`: Enable parallel processing across Pi 5 cores
+- `-DGGML_CPU_AARCH64=ON`: Enable ARM64-oriented optimizations
 
 ---
 
-## 5. 転送
+## 5. Transfer
 
 ```bash
 scp build-rpi5/bin/llama-cli pi@<IP>:~/
@@ -95,7 +95,7 @@ scp model.gguf pi@<IP>:~/
 
 ---
 
-## 6. 実行（推奨設定）
+## 6. Run (recommended settings)
 
 ```bash
 ./llama-cli \
@@ -105,12 +105,12 @@ scp model.gguf pi@<IP>:~/
   --ctx-size 2048
 ```
 
-- `-cnv` は CUDA/metal 無効化や量子化せずに CPU 実行するためのオプションで、Pi5上のローカル実行向け設定です。
-- `--threads $(nproc)` は実機の物理コア数に合わせてください。熱や安定性を見ながら調整します。
+- `-cnv` is intended for local CPU execution on the Pi 5 (not CUDA/Metal, not a quantization workflow flag in this context)
+- Set `--threads $(nproc)` to the device's physical core count; adjust based on thermals and stability
 
 ---
 
-## 7. サーバ運用
+## 7. Server operation
 
 ```bash
 ./llama-server \
@@ -119,4 +119,3 @@ scp model.gguf pi@<IP>:~/
   --port 8080 \
   --threads $(nproc)
 ```
----
