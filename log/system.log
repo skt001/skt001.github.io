@@ -1,0 +1,160 @@
+{"level":"info","ts":1792465864.7683606,"msg":"maxprocs: Leaving GOMAXPROCS=4: CPU quota undefined"}
+{"level":"info","ts":1792465864.7687933,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":6514089984,"previous":9223372036854775807}
+{"level":"info","ts":1792465864.7688038,"msg":"using adjacent Caddyfile"}
+{"level":"info","ts":1792465864.7688076,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1792465864.7688117,"msg":"redirected default logger","from":"stderr","to":"/home/skt001/tmp/caddy-test/log/system.log"}
+{"level":"info","ts":1792465864.7870755,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1792465864.7876477,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0xa739aed9a00"}
+{"level":"warn","ts":1792465864.7881021,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"warn","ts":1792465864.7881145,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"info","ts":1792465864.7881184,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1792465864.7884598,"msg":"autosaved config (load with --resume flag)","file":"/home/skt001/.config/caddy/autosave.json"}
+{"level":"info","ts":1792465864.7884734,"msg":"serving initial configuration"}
+{"level":"info","ts":1792465864.7969081,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/home/skt001/.local/share/caddy","instance":"56341f28-81a3-43b7-95af-71d00af3102e","try_again":1792552264.7968676,"try_again_in":86399.999999399}
+{"level":"info","ts":1792465864.797034,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1792466039.8001583,"msg":"shutting down","signal":"SIGINT"}
+{"level":"warn","ts":1792466039.8004904,"msg":"exiting; byeee!! 👋","signal":"SIGINT"}
+{"level":"info","ts":1792466039.8012064,"logger":"http","msg":"servers shutting down with eternal grace period"}
+{"level":"info","ts":1792466039.8028786,"logger":"tls.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xa739aed9a00"}
+{"level":"info","ts":1792466039.803197,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1792466039.8032255,"msg":"shutdown complete","signal":"SIGINT","exit_code":0}
+{"level":"info","ts":1792466114.2093372,"msg":"maxprocs: Leaving GOMAXPROCS=4: CPU quota undefined"}
+{"level":"info","ts":1792466114.2094765,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":6514089984,"previous":9223372036854775807}
+{"level":"info","ts":1792466114.209488,"msg":"using adjacent Caddyfile"}
+{"level":"info","ts":1792466114.2094924,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1792466114.2094975,"msg":"redirected default logger","from":"stderr","to":"/home/skt001/tmp/caddy-test/log/system.log"}
+{"level":"info","ts":1792466114.215704,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1792466114.216135,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x103e12eff980"}
+{"level":"warn","ts":1792466114.216573,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"warn","ts":1792466114.2166135,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"info","ts":1792466114.2166228,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1792466114.2168946,"msg":"autosaved config (load with --resume flag)","file":"/home/skt001/.config/caddy/autosave.json"}
+{"level":"info","ts":1792466114.216916,"msg":"serving initial configuration"}
+{"level":"info","ts":1792466114.2256253,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/home/skt001/.local/share/caddy","instance":"56341f28-81a3-43b7-95af-71d00af3102e","try_again":1792552514.225622,"try_again_in":86399.999999359}
+{"level":"info","ts":1792466114.2257574,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1792468019.3462558,"msg":"shutting down","signal":"SIGINT"}
+{"level":"warn","ts":1792468019.3466153,"msg":"exiting; byeee!! 👋","signal":"SIGINT"}
+{"level":"info","ts":1792468019.347594,"logger":"http","msg":"servers shutting down with eternal grace period"}
+{"level":"info","ts":1792468019.3489878,"logger":"tls.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0x103e12eff980"}
+{"level":"info","ts":1792468019.3502707,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1792468019.3503795,"msg":"shutdown complete","signal":"SIGINT","exit_code":0}
+{"level":"info","ts":1792468075.6111915,"msg":"maxprocs: Leaving GOMAXPROCS=4: CPU quota undefined"}
+{"level":"info","ts":1792468075.611502,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":6514089984,"previous":9223372036854775807}
+{"level":"info","ts":1792468075.6115098,"msg":"using adjacent Caddyfile"}
+{"level":"info","ts":1792468075.6115134,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1792468075.6115174,"msg":"redirected default logger","from":"stderr","to":"/home/skt001/tmp/caddy-test/log/system.log"}
+{"level":"info","ts":1792468075.628276,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1792468075.6289885,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x2c6226f27980"}
+{"level":"warn","ts":1792468075.629626,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"warn","ts":1792468075.6296506,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"info","ts":1792468075.62966,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1792468075.6303768,"msg":"autosaved config (load with --resume flag)","file":"/home/skt001/.config/caddy/autosave.json"}
+{"level":"info","ts":1792468075.6303947,"msg":"serving initial configuration"}
+{"level":"info","ts":1792468075.6390092,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/home/skt001/.local/share/caddy","instance":"56341f28-81a3-43b7-95af-71d00af3102e","try_again":1792554475.6389701,"try_again_in":86399.999999358}
+{"level":"info","ts":1792468075.6391296,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1792468106.5773787,"msg":"shutting down","signal":"SIGINT"}
+{"level":"warn","ts":1792468106.5774817,"msg":"exiting; byeee!! 👋","signal":"SIGINT"}
+{"level":"info","ts":1792468106.5776048,"logger":"http","msg":"servers shutting down with eternal grace period"}
+{"level":"info","ts":1792468106.5779843,"logger":"tls.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0x2c6226f27980"}
+{"level":"info","ts":1792468106.5789008,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1792468106.57894,"msg":"shutdown complete","signal":"SIGINT","exit_code":0}
+{"level":"info","ts":1792468141.6114945,"msg":"maxprocs: Leaving GOMAXPROCS=4: CPU quota undefined"}
+{"level":"info","ts":1792468141.6117039,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":6514089984,"previous":9223372036854775807}
+{"level":"info","ts":1792468141.6117237,"msg":"using adjacent Caddyfile"}
+{"level":"info","ts":1792468141.6117294,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1792468141.611736,"msg":"redirected default logger","from":"stderr","to":"/home/skt001/tmp/caddy-test/log/system.log"}
+{"level":"info","ts":1792468141.6162221,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1792468141.6166043,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x29a43a0dac80"}
+{"level":"warn","ts":1792468141.6166155,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"warn","ts":1792468141.6166432,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"info","ts":1792468141.6166496,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1792468141.6168768,"msg":"autosaved config (load with --resume flag)","file":"/home/skt001/.config/caddy/autosave.json"}
+{"level":"info","ts":1792468141.6168876,"msg":"serving initial configuration"}
+{"level":"info","ts":1792468141.624621,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/home/skt001/.local/share/caddy","instance":"56341f28-81a3-43b7-95af-71d00af3102e","try_again":1792554541.624614,"try_again_in":86399.999999239}
+{"level":"info","ts":1792468141.6247332,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1792471483.203642,"msg":"shutting down","signal":"SIGINT"}
+{"level":"warn","ts":1792471483.2052488,"msg":"exiting; byeee!! 👋","signal":"SIGINT"}
+{"level":"info","ts":1792471483.2078326,"logger":"http","msg":"servers shutting down with eternal grace period"}
+{"level":"info","ts":1792471483.2121487,"logger":"tls.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0x29a43a0dac80"}
+{"level":"info","ts":1792471483.2139173,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1792471483.2140517,"msg":"shutdown complete","signal":"SIGINT","exit_code":0}
+{"level":"info","ts":1792471507.0497825,"msg":"maxprocs: Leaving GOMAXPROCS=4: CPU quota undefined"}
+{"level":"info","ts":1792471507.0501215,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":6514089984,"previous":9223372036854775807}
+{"level":"info","ts":1792471507.0501332,"msg":"using adjacent Caddyfile"}
+{"level":"info","ts":1792471507.0501394,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1792471507.0501463,"msg":"redirected default logger","from":"stderr","to":"/home/skt001/tmp/caddy-test/log/system.log"}
+{"level":"info","ts":1792471507.0704985,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1792471507.0711029,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0xf7666f67e00"}
+{"level":"warn","ts":1792471507.072126,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"warn","ts":1792471507.0721464,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"info","ts":1792471507.0721521,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1792471507.0726743,"msg":"autosaved config (load with --resume flag)","file":"/home/skt001/.config/caddy/autosave.json"}
+{"level":"info","ts":1792471507.072687,"msg":"serving initial configuration"}
+{"level":"info","ts":1792471507.0772653,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/home/skt001/.local/share/caddy","instance":"56341f28-81a3-43b7-95af-71d00af3102e","try_again":1792557907.0772114,"try_again_in":86399.999999419}
+{"level":"info","ts":1792471507.0774016,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1792472501.117553,"msg":"shutting down","signal":"SIGINT"}
+{"level":"warn","ts":1792472501.1178896,"msg":"exiting; byeee!! 👋","signal":"SIGINT"}
+{"level":"info","ts":1792472501.1182842,"logger":"http","msg":"servers shutting down with eternal grace period"}
+{"level":"info","ts":1792472501.119209,"logger":"tls.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xf7666f67e00"}
+{"level":"info","ts":1792472501.1196244,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1792472501.1196547,"msg":"shutdown complete","signal":"SIGINT","exit_code":0}
+{"level":"info","ts":1792496189.205221,"msg":"maxprocs: Leaving GOMAXPROCS=4: CPU quota undefined"}
+{"level":"info","ts":1792496189.2101002,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":6514089984,"previous":9223372036854775807}
+{"level":"info","ts":1792496189.2101154,"msg":"using adjacent Caddyfile"}
+{"level":"info","ts":1792496189.2101195,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1792496189.2101235,"msg":"redirected default logger","from":"stderr","to":"/home/skt001/github/skt001.github.io/log/system.log"}
+{"level":"info","ts":1792496189.215567,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"warn","ts":1792496189.215934,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"warn","ts":1792496189.2159495,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"info","ts":1792496189.2159545,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1792496189.2159872,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x2065605e0a80"}
+{"level":"info","ts":1792496189.2161806,"msg":"autosaved config (load with --resume flag)","file":"/home/skt001/.config/caddy/autosave.json"}
+{"level":"info","ts":1792496189.2162035,"msg":"serving initial configuration"}
+{"level":"info","ts":1792496189.2209206,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/home/skt001/.local/share/caddy","instance":"56341f28-81a3-43b7-95af-71d00af3102e","try_again":1792582589.2209153,"try_again_in":86399.999999209}
+{"level":"info","ts":1792496189.2210689,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1792501564.8456666,"msg":"shutting down","signal":"SIGINT"}
+{"level":"warn","ts":1792501564.8460615,"msg":"exiting; byeee!! 👋","signal":"SIGINT"}
+{"level":"info","ts":1792501564.8475842,"logger":"http","msg":"servers shutting down with eternal grace period"}
+{"level":"info","ts":1792501564.8519511,"logger":"tls.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0x2065605e0a80"}
+{"level":"info","ts":1792501564.8530989,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1792501564.8531668,"msg":"shutdown complete","signal":"SIGINT","exit_code":0}
+{"level":"info","ts":1792526432.372844,"msg":"maxprocs: Leaving GOMAXPROCS=4: CPU quota undefined"}
+{"level":"info","ts":1792526432.3733351,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":6514093670,"previous":9223372036854775807}
+{"level":"info","ts":1792526432.3733475,"msg":"using adjacent Caddyfile"}
+{"level":"info","ts":1792526432.3733513,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1792526432.3733556,"msg":"redirected default logger","from":"stderr","to":"/home/skt001/github/skt001.github.io/log/system.log"}
+{"level":"info","ts":1792526432.3947954,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1792526432.395175,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x216d61852f80"}
+{"level":"warn","ts":1792526432.395181,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"warn","ts":1792526432.3952456,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"info","ts":1792526432.3952682,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1792526432.395932,"msg":"autosaved config (load with --resume flag)","file":"/home/skt001/.config/caddy/autosave.json"}
+{"level":"info","ts":1792526432.395948,"msg":"serving initial configuration"}
+{"level":"info","ts":1792526432.4011436,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/home/skt001/.local/share/caddy","instance":"56341f28-81a3-43b7-95af-71d00af3102e","try_again":1792612832.4011393,"try_again_in":86399.999999108}
+{"level":"info","ts":1792526432.4012523,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1792526544.3715682,"msg":"shutting down","signal":"SIGINT"}
+{"level":"warn","ts":1792526544.3720784,"msg":"exiting; byeee!! 👋","signal":"SIGINT"}
+{"level":"info","ts":1792526544.3777795,"logger":"http","msg":"servers shutting down with eternal grace period"}
+{"level":"info","ts":1792526544.3785539,"logger":"tls.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0x216d61852f80"}
+{"level":"info","ts":1792526544.3789449,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1792526544.3789709,"msg":"shutdown complete","signal":"SIGINT","exit_code":0}
+{"level":"info","ts":1792526775.7928224,"msg":"maxprocs: Leaving GOMAXPROCS=4: CPU quota undefined"}
+{"level":"info","ts":1792526775.793621,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":6514093670,"previous":9223372036854775807}
+{"level":"info","ts":1792526775.7936418,"msg":"using adjacent Caddyfile"}
+{"level":"info","ts":1792526775.7936478,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1792526775.7936542,"msg":"redirected default logger","from":"stderr","to":"/home/skt001/github/skt001.github.io/log/system.log"}
+{"level":"info","ts":1792526775.817571,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1792526775.818026,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x3b46d8cb5a80"}
+{"level":"warn","ts":1792526775.8180716,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"warn","ts":1792526775.818096,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":8080"}
+{"level":"info","ts":1792526775.8181055,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1792526775.8188565,"msg":"autosaved config (load with --resume flag)","file":"/home/skt001/.config/caddy/autosave.json"}
+{"level":"info","ts":1792526775.8188937,"msg":"serving initial configuration"}
+{"level":"info","ts":1792526775.8264668,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/home/skt001/.local/share/caddy","instance":"56341f28-81a3-43b7-95af-71d00af3102e","try_again":1792613175.826462,"try_again_in":86399.999999328}
+{"level":"info","ts":1792526775.8266578,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1792527267.7700214,"msg":"shutting down","signal":"SIGINT"}
+{"level":"warn","ts":1792527267.7701313,"msg":"exiting; byeee!! 👋","signal":"SIGINT"}
+{"level":"info","ts":1792527267.770329,"logger":"http","msg":"servers shutting down with eternal grace period"}
+{"level":"info","ts":1792527267.7711353,"logger":"tls.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0x3b46d8cb5a80"}
+{"level":"info","ts":1792527267.7716112,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1792527267.7716427,"msg":"shutdown complete","signal":"SIGINT","exit_code":0}

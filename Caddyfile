@@ -1,0 +1,16 @@
+{
+	log {
+		output file log/system.log
+		format json
+	}
+}
+
+http://:8080 {
+	root * .
+	file_server
+
+	log {
+		output file log/access.log
+		format json
+	}
+}

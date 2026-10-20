@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Caddy Log Viewer</title>
+        <link rel="stylesheet" href="../simple.min.css" />
+        <style>
+            pre {
+                background: #000;
+                color: #fff;
+            }
+            pre code {
+                background: transparent;
+                color: inherit;
+                font-family: monospace, monospace;
+                font-size: 0.80rem;
+            }
+        </style>
+        <script src="../copy.js"></script>
+    </head>
+    <body>
+        <main>
+            <h1>Caddy Log Viewer</h1>
+
+            <h2>システムログ (system.log)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Level</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody id="system-log">
+                    <tr>
+                        <td colspan="3">読み込み中...</td>
+                    </tr>
+                </tbody>
+            </table>
+            <details>
+                <summary>古典的テキスト形式で表示（コピペ用）</summary>
+                <pre><code id="system-log-raw">読み込み中...</code></pre>
+            </details>
+
+            <h2>正常アクセスログ (Status < 400)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Method</th>
+                        <th>URI</th>
+                        <th>Status</th>
+                        <th>Remote IP</th>
+                    </tr>
+                </thead>
+                <tbody id="access-log">
+                    <tr>
+                        <td colspan="5">読み込み中...</td>
+                    </tr>
+                </tbody>
+            </table>
+            <details>
+                <summary>古典的テキスト形式で表示（コピペ用）</summary>
+                <pre><code id="access-log-raw">読み込み中...</code></pre>
+            </details>
+
+            <h2>エラーアクセスログ (Status >= 400)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Method</th>
+                        <th>URI</th>
+                        <th>Status</th>
+                        <th>Remote IP</th>
+                    </tr>
+                </thead>
+                <tbody id="error-log">
+                    <tr>
+                        <td colspan="5">読み込み中...</td>
+                    </tr>
+                </tbody>
+            </table>
+            <details>
+                <summary>古典的テキスト形式で表示（コピペ用）</summary>
+                <pre><code id="error-log-raw">読み込み中...</code></pre>
+            </details>
+        </main>
+
+        <script>
+            const MAX_LOGS = 100;
+
+            async function fetchLogFile(filename) {
+                try {
+                    const response = await fetch(filename);
+                    if (!response.ok) return [];
+                    const text = await response.text();
+                    return text
+                        .trim()
+                        .split("\n")
+                        .filter((line) => line.trim() !== "")
+                        .map((line) => {
+                            try {
+                                return JSON.parse(line);
+                            } catch (e) {
+                                return null;
+                            }
+                        })
+                        .filter((log) => log !== null);
+                } catch (err) {
+                    console.error(filename, err);
+                    return [];
+                }
+            }
+
+            async function loadLogs() {
+                const systemLogs = await fetchLogFile("system.log");
+                const systemBody = document.getElementById("system-log");
+                const recentSystem = systemLogs.reverse().slice(0, MAX_LOGS);
+
+                systemBody.innerHTML =
+                    recentSystem.length > 0
+                        ? recentSystem
+                              .map((log) => {
+                                  const time = log.ts ? new Date(log.ts * 1000).toLocaleString() : log.time || "-";
+                                  const level = log.level || "-";
+                                  const msg = log.msg || JSON.stringify(log);
+                                  return `<tr><td>${time}</td><td>${level}</td><td>${msg}</td></tr>`;
+                              })
+                              .join("")
+                        : '<tr><td colspan="3">ログなし</td></tr>';
+
+                // システムログの古典的テキスト風生成 ([Time] [Level] Message)
+                const rawSystemText = recentSystem
+                    .map((log) => {
+                        const time = log.ts ? new Date(log.ts * 1000).toISOString() : log.time || "-";
+                        const level = log.level || "INFO";
+                        const msg = log.msg || JSON.stringify(log);
+                        return `[${time}] [${level}] ${msg}`;
+                    })
+                    .join("\n");
+                document.getElementById("system-log-raw").textContent = rawSystemText || "ログなし";
+
+                const accessLogs = await fetchLogFile("access.log");
+
+                const normalLogs = [];
+                const errorLogs = [];
+
+                accessLogs.forEach((log) => {
+                    const status = log.status || 0;
+                    if (status >= 400) {
+                        errorLogs.push(log);
+                    } else {
+                        normalLogs.push(log);
+                    }
+                });
+
+                const recentNormal = normalLogs.reverse().slice(0, MAX_LOGS);
+                const recentError = errorLogs.reverse().slice(0, MAX_LOGS);
+
+                const accessBody = document.getElementById("access-log");
+                const errorBody = document.getElementById("error-log");
+
+                const renderRows = (logs) =>
+                    logs
+                        .map((log) => {
+                            const status = log.status || 0;
+                            const time = log.ts ? new Date(log.ts * 1000).toLocaleString() : "-";
+                            const method = log.request?.method || "-";
+                            const uri = log.request?.uri || "-";
+                            const remoteIp = log.request?.remote_ip || "-";
+
+                            return `<tr>
+                    <td>${time}</td>
+                    <td>${method}</td>
+                    <td>${uri}</td>
+                    <td>${status}</td>
+                    <td>${remoteIp}</td>
+                </tr>`;
+                        })
+                        .join("");
+
+                accessBody.innerHTML = renderRows(recentNormal) || '<tr><td colspan="5">ログなし</td></tr>';
+                errorBody.innerHTML = renderRows(recentError) || '<tr><td colspan="5">エラーログなし</td></tr>';
+
+                // アクセスログの古典的フォーマット風生成 (IP - [Time] "METHOD URI" Status)
+                const formatClassicAccess = (logs) =>
+                    logs
+                        .map((log) => {
+                            const remoteIp = log.request?.remote_ip || "-";
+                            const time = log.ts ? new Date(log.ts * 1000).toUTCString() : "-";
+                            const method = log.request?.method || "-";
+                            const uri = log.request?.uri || "-";
+                            const status = log.status || 0;
+                            return `${remoteIp} - [${time}] "${method} ${uri}" ${status}`;
+                        })
+                        .join("\n");
+
+                document.getElementById("access-log-raw").textContent = formatClassicAccess(recentNormal) || "ログなし";
+                document.getElementById("error-log-raw").textContent =
+                    formatClassicAccess(recentError) || "エラーログなし";
+            }
+
+            loadLogs();
+        </script>
+    </body>
+</html>
+```[cite: 1] 4ターン目
