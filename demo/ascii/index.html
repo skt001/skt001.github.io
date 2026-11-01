@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>8x8 ASCII PNG Generator</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; }
+    label { display: block; margin: .8rem 0; }
+    input { margin-left: .5rem; }
+    #preview { display: block; margin-top: 1rem; image-rendering: pixelated;
+               background: #000; }
+    code { overflow-wrap: anywhere; }
+    pre { background: #f4f4f4; padding: .8rem; overflow-x: auto; }
+    section { max-width: 40rem; margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <h1>8×8 ASCII PNG Generator</h1>
+  <label>Text <input id="text" value="HELLO 1234"></label>
+  <label>Scale <input id="scale" type="number" min="1" max="32" value="4"></label>
+  <button id="generate">Generate PNG</button>
+  <p><img id="preview" alt="Generated bitmap"></p>
+  <p><a id="download" download="ascii.png">PNGを保存</a></p>
+
+  <section>
+    <h2>使い方</h2>
+    <p>
+      入力したテキストを 8x8 ピクセルのビットマップフォントで描画し、PNG 画像にします。
+      Scale は拡大率（整数）で、「PNGを保存」から画像をダウンロードできます。
+      フォントに含まれない文字は何も描画されません。
+    </p>
+
+    <h2>ファイル</h2>
+    <ul>
+      <li><a href="./ascii.js">ascii.js</a> — Canvas で PNG の data URL を生成する <code>renderAscii</code> 関数</li>
+      <li><a href="./glyphs.js">glyphs.js</a> — 1文字 8 バイト（1bit/pixel、最上位ビットが左端）のグリフデータ</li>
+      <li><a href="./README.txt">README.txt</a> — 詳細な説明</li>
+    </ul>
+
+    <h2>自分のページで使う</h2>
+    <p><code>ascii.js</code> と <code>glyphs.js</code> を同じフォルダーに置き、ES モジュールとして読み込みます。</p>
+    <pre><code>&lt;img id="out"&gt;
+&lt;script type="module"&gt;
+  import { renderAscii } from "./ascii.js";
+  document.querySelector("#out").src =
+    renderAscii("HELLO", { scale: 4 });
+&lt;/script&gt;</code></pre>
+    <p>オプション:</p>
+    <ul>
+      <li><code>scale</code> — 整数の拡大率（既定 1）</li>
+      <li><code>foreground</code> — 文字色の CSS color（既定 <code>"#fff"</code>。背景は常に黒）</li>
+      <li><code>spacing</code> — 文字間の追加ピクセル数（既定 0）</li>
+    </ul>
+    <p>モジュールの読み込みには HTTP(S) が必要です。<code>file://</code> で直接開くと動かないことがあります。</p>
+  </section>
+
+  <script type="module">
+    import { renderAscii } from "./ascii.js";
+
+    const text = document.querySelector("#text");
+    const scale = document.querySelector("#scale");
+    const preview = document.querySelector("#preview");
+    const download = document.querySelector("#download");
+
+    function generate() {
+      const dataUrl = renderAscii(text.value, { scale: Number(scale.value) });
+      preview.src = dataUrl;
+      download.href = dataUrl;
+    }
+
+    document.querySelector("#generate").addEventListener("click", generate);
+    generate();
+  </script>
+</body>
+</html>

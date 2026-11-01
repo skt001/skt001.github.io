@@ -79,6 +79,14 @@
                 <h3>デモ</h3>
                 <ul>
                     <li>
+                        <a href="./demo/ascii/">8x8 ASCII PNG Generator</a> —
+                        ASCII テキストを 8x8 ピクセルフォントの PNG に変換
+                    </li>
+                    <li>
+                        <a href="./demo/counter/">ASCII Counter</a> —
+                        Cloudflare Worker の訪問リクエスト数を ASCII アートで表示
+                    </li>
+                    <li>
                         <a href="./demo/cross/">Cross-Folder Media Viewer デモ</a> —
                         複数フォルダ横断の写真・動画ビューア
                     </li>
@@ -112,6 +120,16 @@
 
                 <article>
                     <h3>
+                        <a href="https://github.com/skt001/dat-lookup-list" target="_blank" rel="noopener"
+                            >dat-lookup-list</a
+                        >
+                    </h3>
+                    <p>No-Intro DAT ファイルから、ゲーム名と SHA-1 ハッシュをコピー・検索ボタン付き HTML 一覧に変換。</p>
+                    <p><small>HTML / No-Intro DAT</small></p>
+                </article>
+
+                <article>
+                    <h3>
                         <a href="https://github.com/skt001/mame-explorer" target="_blank" rel="noopener"
                             >mame-explorer</a
                         >
@@ -121,6 +139,34 @@
                         List を単一ツリーで閲覧。CHD モードあり。stdlib のみ。
                     </p>
                     <p><small>Python / CUI / MAME</small></p>
+                </article>
+
+                <article>
+                    <h3>
+                        <a href="https://github.com/skt001/skt-tool" target="_blank" rel="noopener">skt-tool</a>
+                    </h3>
+                    <p>ca65 補助ツール、NES ダンジョンシミュレーター、フォント画像変換、MML 量子化などの Python ユーティリティ集。</p>
+                    <p><small>Python / ユーティリティ</small></p>
+                </article>
+
+                <article>
+                    <h3>
+                        <a href="https://github.com/skt001/mml-toolchain" target="_blank" rel="noopener"
+                            >mml-toolchain</a
+                        >
+                    </h3>
+                    <p>MIDI、MML、簡易 ASCII 楽譜文字列を相互変換するコマンドラインツール。</p>
+                    <p><small>Python / MIDI / MML</small></p>
+                </article>
+
+                <article>
+                    <h3>
+                        <a href="https://github.com/skt001/hasheous-tools" target="_blank" rel="noopener"
+                            >hasheous-tools</a
+                        >
+                    </h3>
+                    <p>No-Intro DAT ファイルを Hasheous と照合するツール。</p>
+                    <p><small>Python / Hasheous</small></p>
                 </article>
 
                 <article>
@@ -164,16 +210,6 @@
 
                 <article>
                     <h3>
-                        <a href="https://github.com/skt001/rom-checker" target="_blank" rel="noopener">rom-checker</a>
-                    </h3>
-                    <p>
-                        ROM 管理用 Python ツール集。No-Intro DAT との Have/Miss 比較と、各種ROMヘッダ解析レポート生成。
-                    </p>
-                    <p><small>Python / ROM</small></p>
-                </article>
-
-                <article>
-                    <h3>
                         <a href="https://github.com/skt001/MediaOrganizer" target="_blank" rel="noopener"
                             >MediaOrganizer</a
                         >
@@ -183,19 +219,6 @@
                         を使い、写真・動画を日付・撮影場所・機種で自動整理。重複除去も可能。
                     </p>
                     <p><small>Batch / Windows</small></p>
-                </article>
-
-                <article>
-                    <h3>
-                        <a href="https://github.com/skt001/php-media-browser" target="_blank" rel="noopener"
-                            >php-media-browser</a
-                        >
-                    </h3>
-                    <p>
-                        単一ファイルの PHP
-                        メディアブラウザ。画像・動画のサムネイル表示、Lightbox、統計ビュー。認証なしなので公開サーバでは注意。
-                    </p>
-                    <p><small>PHP / 単一ファイル</small></p>
                 </article>
 
                 <article>
@@ -235,129 +258,125 @@
                     これで GitHub Pages と同じ内容が Cloudflare 側でも公開されます。両方が同時に動いても衝突しません。
                 </p>
 
-                <h3>2. Cloudflare Workers で簡単な API を公開する</h3>
-                <p>静的ファイルだけでなく、簡単なサーバーレス関数も無料枠で公開できます。</p>
-                <ol>
-                    <li>
-                        Cloudflare ダッシュボード → <strong>Workers & Pages</strong> → <strong>Create</strong> →
-                        <strong>Worker</strong>
-                    </li>
-                    <li>名前を付けて Deploy（例: <code>hello-demo</code>）</li>
-                    <li>出てきたコードを次のように書き換えて Save and Deploy</li>
-                </ol>
-                <pre><code>export default {
-  async fetch(request) {
-    const url = new URL(request.url);
-    const name = url.searchParams.get("name") || "World";
-    const data = {
-      message: `こんにちは、${name}さん！`,
-      time: new Date().toISOString(),
-      worker: "hello-demo"
-    };
-    return new Response(JSON.stringify(data, null, 2), {
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      }
-    });
-  }
-};</code></pre>
+                <h3>2. ASCII Counter Worker を公開する</h3>
                 <p>
-                    デプロイ後、<code>https://hello-demo.あなたのサブドメイン.workers.dev</code> のような URL
-                    が発行されます。
+                    ASCII Counter Worker は、アクセス数を数えるための小さな API です。URL に GET リクエストが届くたびに
+                    カウントを1増やし、更新後の数値だけをプレーンテキストで返します。カウントは SQLite
+                    ストレージを使う Durable Object に保存されるため、別のリクエストでも引き継がれます。
+                    ただし数えているのは人やユニーク訪問者ではなくリクエストです。ページを再読み込みした場合や、
+                    同じ URL を複数回呼び出した場合も、そのたびに増加します。
                 </p>
-                <p>ブラウザや他のページからこの URL を叩くと、JSON が返ってきます。</p>
+                <p>
+                    デプロイには、Worker の処理を書く <code>src/index.js</code> と、Worker 名や Durable Object
+                    のバインディング、SQLite ストレージを設定する <code>wrangler.jsonc</code>
+                    の2つのファイルが必要です。どちらか一方だけではデプロイできません。
+                </p>
+                <p>Node.js と <code>npx</code> を用意し、まず作業用フォルダーを作成します。</p>
+                <pre><code>mkdir -p ascii-visitor-counter/src
+cd ascii-visitor-counter</code></pre>
+                <p><strong>ファイル1：<code>src/index.js</code></strong>（Worker の処理）</p>
+                <pre><code>import { DurableObject } from "cloudflare:workers";
 
-                <details>
-                    <summary><strong>補足：Workers でできること・できないこと</strong></summary>
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Cache-Control": "no-store",
+};
 
-                    <h4>1. 役割と動作</h4>
-                    <p><strong>できる</strong></p>
-                    <ul>
-                        <li>HTTP リクエストを受け取り、JSON や HTML を返す（Web API / サーバーレス関数）</li>
-                        <li>V8 Isolate による極小のコールドスタート</li>
-                        <li>ユーザーに近いエッジでの実行と自動スケール（プランごとの上限あり）</li>
-                        <li><code>ReadableStream</code> によるストリーミングレスポンスや大容量ダウンロード</li>
-                    </ul>
-                    <p><strong>できない</strong></p>
-                    <ul>
-                        <li>常時起動の常駐プロセス（基本はリクエスト駆動。Cron / Durable Objects は別枠）</li>
-                        <li>
-                            特定データセンター（例:
-                            東京のみ）への物理固定（グローバル分散が前提。配置のヒントは限定的に可能）
-                        </li>
-                    </ul>
+const textHeaders = {
+  ...corsHeaders,
+  "Content-Type": "text/plain; charset=utf-8",
+};
 
-                    <h4>2. バックエンド連携とデータ保存</h4>
-                    <p><strong>できる</strong></p>
-                    <ul>
-                        <li>D1（SQLite）でのリレーショナルデータの保存・検索</li>
-                        <li>Workers KV による高速な Key-Value の読み書き</li>
-                        <li>R2 へのオブジェクト（画像・動画など）の保存と配信</li>
-                        <li>Hyperdrive 経由の外部 PostgreSQL 等へのコネクションプーリング</li>
-                        <li>D1 と R2 を組み合わせたハイブリッド設計</li>
-                    </ul>
-                    <p><strong>できない</strong></p>
-                    <ul>
-                        <li>R2 オブジェクトに対する SQL 検索や部分書き換え（オブジェクト単位の読み書き）</li>
-                        <li>
-                            永続的な OS ディスクとしてのファイルシステム（ただし <code>nodejs_compat</code> 時は仮想 FS
-                            でリクエスト単位の <code>/tmp</code> 読み書きは可能。非永続・メモリ上限内）
-                        </li>
-                    </ul>
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
 
-                    <h4>3. プロキシと Server-to-Server 通信</h4>
-                    <p><strong>できる</strong></p>
-                    <ul>
-                        <li>
-                            <code>fetch()</code> による外部 API / 他サーバーへの HTTP(S) リクエスト（BFF 的な集約など）
-                        </li>
-                        <li>URL やヘッダーを書き換えて転送するリバースプロキシ動作</li>
-                        <li>TCP ソケット（connect API）による外部 DB 等への接続</li>
-                        <li>Cloudflare Tunnel と組み合わせたプライベートネットワークへのアクセス</li>
-                    </ul>
-                    <p><strong>できない</strong></p>
-                    <ul>
-                        <li>送信元 IP を任意のローカル IP に偽装すること（外から見た送信元は Cloudflare の IP 帯）</li>
-                        <li>
-                            標準の <code>fetch()</code> で TLS
-                            証明書検証をスキップすること（自己署名はそのままでは不可。公的 CA・Cloudflare Origin
-                            CA、または Custom Origin Trust Store +
-                            <code>cots_on_external_fetch</code> で許可する手段はある）
-                        </li>
-                    </ul>
+    if (url.pathname !== "/") {
+      return new Response("Not found", { status: 404 });
+    }
 
-                    <h4>4. OS レベルの処理とデータ加工</h4>
-                    <p><strong>できる</strong></p>
-                    <ul>
-                        <li>JavaScript / TypeScript によるデータ処理・パース</li>
-                        <li>WebAssembly（C / Rust / Go 等からコンパイル）の実行</li>
-                        <li>標準の fetch API（multipart/form-data 等）によるバイナリの受け取り</li>
-                    </ul>
-                    <p><strong>できない</strong></p>
-                    <ul>
-                        <li>bash / zsh などのシェル実行</li>
-                        <li>
-                            <code>child_process</code>（exec / spawn）による別プロセス起動（ImageMagick
-                            等のバイナリ直接実行）
-                        </li>
-                        <li>OS ネイティブの共有ライブラリ（.so 等）の読み込み</li>
-                    </ul>
-                </details>
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders,
+      });
+    }
 
-                <h3>3. このページから Worker を試す</h3>
-                <p>上の手順で作った Worker の URL を下に入力すると、実際に呼び出して結果を確認できます。</p>
+    if (request.method !== "GET") {
+      return new Response("Method not allowed", {
+        status: 405,
+        headers: { ...corsHeaders, Allow: "GET, OPTIONS" },
+      });
+    }
+
+    try {
+      const id = env.COUNTER.idFromName("global");
+      const counter = env.COUNTER.get(id);
+      const count = await counter.increment();
+
+      return new Response(String(count), { headers: textHeaders });
+    } catch (error) {
+      console.error("Counter increment failed:", error);
+      return new Response("ERROR!", { headers: textHeaders });
+    }
+  },
+};
+
+export class Counter extends DurableObject {
+  async increment() {
+    const count = (await this.ctx.storage.get("count")) ?? 0;
+    const nextCount = count + 1;
+    await this.ctx.storage.put("count", nextCount);
+    return nextCount;
+  }
+}</code></pre>
+                <p><strong>ファイル2：<code>wrangler.jsonc</code></strong>（作業用フォルダー直下に保存する設定）</p>
+                <pre><code>{
+  "name": "ascii-visitor-counter",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-30",
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "COUNTER",
+        "class_name": "Counter"
+      }
+    ]
+  },
+  "exports": {
+    "Counter": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  }
+}</code></pre>
+                <p>2つのファイルを保存したら、作業用フォルダーで初回ログインとデプロイを実行します。</p>
+                <pre><code>npx wrangler login
+npx wrangler deploy</code></pre>
+                <p>
+                    デプロイ後に表示される <code>https://ascii-visitor-counter.&lt;サブドメイン&gt;.workers.dev/</code>
+                    の URL を使います。
+                </p>
+
+                <h3>3. Worker からカウント数値を取得する</h3>
+                <p>
+                    Worker の URL に GET リクエストを送ると、カウントが1増え、その数値がプレーンテキストで返ります。
+                    下の入力欄には、このサイトで使っている Worker の URL が入っています。ボタンを押すとリクエストが送られ、
+                    返ってきたカウント数値を確認できます。呼び出すたびにカウントが増える点に注意してください。
+                </p>
                 <p>
                     <label
                         >Worker URL:
-                        <input type="text" id="worker-url" placeholder="https://hello-demo.xxxx.workers.dev" size="40"
+                        <input
+                            type="url"
+                            id="worker-url"
+                            value="https://ascii-visitor-counter.skt001.workers.dev/"
+                            size="48"
                     /></label>
                 </p>
-                <p>
-                    <label>名前（任意）: <input type="text" id="worker-name" placeholder="名前" size="20" /></label>
-                </p>
-                <p><button onclick="callWorker()">呼び出す</button></p>
-                <pre id="worker-result">ここに結果が表示されます</pre>
+                <p><button type="button" onclick="callWorker()">カウント数値を取得</button></p>
+                <pre id="worker-result">ここにカウント数値が表示されます</pre>
             </section>
 
             <section>
@@ -368,9 +387,8 @@
                         Workers の無料枠には1日あたりのリクエスト上限があります。個人・小規模な用途では通常十分です。
                     </li>
                     <li>
-                        上記サンプルでは CORS を通すために
-                        <code>Access-Control-Allow-Origin: *</code>
-                        を付けています。本番で公開する場合は、許可するオリジンを制限した方が安全です。
+                        Counter Worker はこのページから呼び出せるよう、クロスオリジンの GET リクエストを許可しています。
+                        URL を知っていれば誰でもリクエストでき、そのたびにカウントが増えます。
                     </li>
                 </ul>
             </section>
@@ -383,25 +401,25 @@
 
         <script>
             async function callWorker() {
-                const base = document.getElementById("worker-url").value.trim();
-                const name = document.getElementById("worker-name").value.trim() || "World";
+                const workerUrl = document.getElementById("worker-url").value.trim();
                 const resultEl = document.getElementById("worker-result");
 
-                if (!base) {
+                if (!workerUrl) {
                     resultEl.textContent = "Worker の URL を入力してください。";
                     return;
                 }
 
                 resultEl.textContent = "呼び出し中…";
                 try {
-                    const url = new URL(base);
-                    url.searchParams.set("name", name);
-                    const res = await fetch(url.toString());
-                    const text = await res.text();
-                    resultEl.textContent = `Status: ${res.status}\n\n${text}`;
+                    const res = await fetch(new URL(workerUrl));
+                    const count = await res.text();
+                    if (!res.ok || !/^\d+$/.test(count)) {
+                        throw new Error(`数値を取得できませんでした (HTTP ${res.status}): ${count}`);
+                    }
+                    resultEl.textContent = count;
                 } catch (err) {
                     resultEl.textContent =
-                        "エラー: " + err.message + "\n\nCORS や URL の誤り、Worker 未デプロイの可能性あり。";
+                        "エラー: " + err.message + "\n\nWorker URL、デプロイ状態、CORS 設定を確認してください。";
                 }
             }
         </script>

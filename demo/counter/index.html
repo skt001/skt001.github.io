@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ASCII Counter</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; }
+    #counter { display: block; image-rendering: pixelated; }
+    #status { color: #666; }
+    code { overflow-wrap: anywhere; }
+    pre { background: #f4f4f4; padding: .8rem; overflow-x: auto; }
+    section { max-width: 40rem; margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <img id="counter" alt="Visitor counter">
+  <p id="status">カウント取得中…</p>
+
+  <section>
+    <h2>使い方</h2>
+    <p>
+      このページを開くと Cloudflare Worker に GET リクエストを送り、返ってきたカウント数値を 6 桁（0 埋め）で
+      8x8 ピクセルフォントの画像として表示します。
+      訪問者数ではなくリクエスト数のカウントで、再読み込みのたびに増えます。
+      取得に失敗した場合は、画像の位置にエラーメッセージが表示されます。
+    </p>
+
+    <h2>ファイル</h2>
+    <ul>
+      <li><a href="./ascii.js">ascii.js</a> — 文字列を PNG の data URL に変換する <code>renderAscii</code> 関数</li>
+      <li><a href="./glyphs.js">glyphs.js</a> — 8x8 ピクセルのグリフデータ</li>
+      <li><a href="./worker/src/index.js">worker/src/index.js</a> — カウントを増やして数値を返す Worker</li>
+      <li><a href="./worker/wrangler.jsonc">worker/wrangler.jsonc</a> — Worker と Durable Object の設定</li>
+      <li><a href="./worker/README.md">worker/README.md</a> — Worker のデプロイ・動作確認手順</li>
+    </ul>
+
+    <h2>自分のページで使う</h2>
+    <p>
+      Worker をデプロイしたあと、その URL に置き換えて、<code>ascii.js</code> と <code>glyphs.js</code>
+      を同じフォルダーに置いたページから次のように呼び出します。
+    </p>
+    <pre><code>&lt;img id="counter"&gt;
+&lt;script type="module"&gt;
+  import { renderAscii } from "./ascii.js";
+  const res = await fetch("https://ascii-visitor-counter.&lt;サブドメイン&gt;.workers.dev/");
+  const count = await res.text();
+  document.querySelector("#counter").src =
+    renderAscii(count.padStart(6, "0"), { scale: 4 });
+&lt;/script&gt;</code></pre>
+    <p>Worker のデプロイ方法は<a href="../../">トップページ</a>の手順を参照してください。</p>
+  </section>
+
+  <script type="module">
+    import { renderAscii } from "./ascii.js";
+
+    const img = document.querySelector("#counter");
+    const status = document.querySelector("#status");
+
+    async function update() {
+      try {
+        const response = await fetch(
+          "https://ascii-visitor-counter.skt001.workers.dev/",
+          { cache: "no-store" }
+        );
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const count = await response.text();
+        img.src = renderAscii(count.padStart(6, "0"), { scale: 4 });
+        status.textContent = "";
+      } catch (error) {
+        status.textContent = `カウンター取得エラー: ${error.message}`;
+      }
+    }
+
+    update();
+  </script>
+</body>
+</html>
