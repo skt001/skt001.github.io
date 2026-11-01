@@ -3,20 +3,10 @@
   style.textContent = `
     .copy-btn {
       position: absolute;
-      top: 8px;
-      right: 8px;
-      background: #333;
-      color: #fff;
-      border: none;
-      padding: 4px 10px;
-      font-size: 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      opacity: 0.85;
-      z-index: 10;
+      top: 0.5rem;
+      right: 0.5rem;
+      z-index: 1;
     }
-    .copy-btn:hover { opacity: 1; background: #555; }
-    .copy-btn.copied { background: #28a745; color: white; }
     pre { position: relative; }
   `;
   document.head.appendChild(style);
@@ -56,25 +46,37 @@
 
     const btn = document.createElement('button');
     btn.className = 'copy-btn';
-    btn.textContent = 'コピー';
+    btn.type = 'button';
+    btn.textContent = '📋';
+    btn.setAttribute('aria-label', 'コードをコピー');
+    btn.title = 'コードをコピー';
 
     btn.onclick = () => {
-      const code = pre.querySelector('code') || pre;
-      const text = code.textContent.trim();
+      const content = pre.cloneNode(true);
+      content.querySelectorAll('.copy-btn').forEach(button => button.remove());
+      const code = content.querySelector('code') || content;
+      const text = code.textContent;
 
       copyTextToClipboard(text).then(() => {
-        const original = btn.textContent;
-        btn.textContent = 'コピー済み';
-        btn.classList.add('copied');
+        btn.textContent = '✅';
+        btn.setAttribute('aria-label', 'コピーしました');
+        btn.title = 'コピーしました';
 
         setTimeout(() => {
-          btn.textContent = original;
-          btn.classList.remove('copied');
+          btn.textContent = '📋';
+          btn.setAttribute('aria-label', 'コードをコピー');
+          btn.title = 'コードをコピー';
         }, 1800);
       }).catch(err => {
         console.error('コピー失敗', err);
-        btn.textContent = '失敗';
-        setTimeout(() => btn.textContent = 'コピー', 1500);
+        btn.textContent = '⚠️';
+        btn.setAttribute('aria-label', 'コピーに失敗しました');
+        btn.title = 'コピーに失敗しました';
+        setTimeout(() => {
+          btn.textContent = '📋';
+          btn.setAttribute('aria-label', 'コードをコピー');
+          btn.title = 'コードをコピー';
+        }, 1500);
       });
     };
 
