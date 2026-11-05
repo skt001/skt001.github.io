@@ -126,6 +126,19 @@
                     </h3>
                     <p>No-Intro DAT ファイルから、ゲーム名と SHA-1 ハッシュをコピー・検索ボタン付き HTML 一覧に変換。</p>
                     <p><small>HTML / No-Intro DAT</small></p>
+                    <pre><code>$ uv run dat2lookup.py --help
+usage: dat2lookup.py [-h] [-o OUTPUT] dat
+
+Convert a DAT file into a simple HTML ROM list.
+
+positional arguments:
+  dat                   Path to the DAT file
+
+options:
+  -h, --help            show this help message and exit
+  -o OUTPUT, --output OUTPUT
+                        Output HTML path (default: DAT file name with .html
+                        extension)</code></pre>
                 </article>
 
                 <article>
@@ -139,6 +152,36 @@
                         List を単一ツリーで閲覧。CHD モードあり。stdlib のみ。
                     </p>
                     <p><small>Python / CUI / MAME</small></p>
+                    <pre><code>$ uv run mame_explorer.py --help
+usage: mame_explorer.py [-h] [package]
+
+Keyboard-driven MAME Explorer.
+
+  mame_explorer.py &lt;package&gt;
+     Browses Arcade / Software Lists from &lt;package&gt; (a mame executable, a
+     directory containing one, or an archive containing one). Reads
+     listxml/hash fresh every run. This is the standard way to use this tool.
+
+Extension - build caches once, then reuse them:
+
+  mame_explorer.py read arcade &lt;mame executable/package&gt;
+  mame_explorer.py read softwarelist &lt;hash dir, or mame executable/package&gt;
+  mame_explorer.py read romdir &lt;directory to search for *.chd files&gt;
+  mame_explorer.py                 (no argument; browses the caches above)
+  mame_explorer.py chd             (CHD mode: only branches with a Disk
+                                   present in the romdir cache)
+
+'read romdir' indexes CHD filenames for CHD mode and candidate display (press Tab on a Disk node).
+It does not verify ROM/CHD contents or hashes.
+'chd' requires the romdir cache and prunes the tree to matching branches only.
+
+positional arguments:
+  package     MAME package for the standard direct mode (see above). Omit to browse cached 'read' data instead.
+
+options:
+  -h, --help  show this help message and exit
+
+Run 'mame_explorer.py --usage' for copy-pasteable command examples.</code></pre>
                 </article>
 
                 <article>
@@ -147,6 +190,191 @@
                     </h3>
                     <p>ca65 補助ツール、NES ダンジョンシミュレーター、フォント画像変換、MML 量子化などの Python ユーティリティ集。</p>
                     <p><small>Python / ユーティリティ</small></p>
+                    <pre><code>$ uv run bin2ca65.py --help
+usage: bin2ca65.py [-h] [--segment NAME] [--label NAME] [--cols N] file
+
+Convert a binary file to ca65 .byte table source on stdout.
+
+positional arguments:
+  file            Input binary file
+
+options:
+  -h, --help      show this help message and exit
+  --segment NAME  Segment name (default: RODATA)
+  --label NAME    Label name (default: binary_data)
+  --cols N        Bytes per output line (default: 16)
+
+Examples:
+  python3 bin2ca65.py data.bin                        # Defaults (RODATA, binary_data)
+  python3 bin2ca65.py palette.pal --label PALETTE     # Set the label
+  python3 bin2ca65.py font.chr --segment CHARS        # Set the segment
+  python3 bin2ca65.py font.chr --cols 8 &gt; font.inc    # Save 8 bytes per line to a file</code></pre>
+                    <pre><code>$ uv run ca65_rnd_table.py --help
+usage: ca65_rnd_table.py [-h] [--seed HEX/INT] [--segment NAME] [--label NAME]
+                         [--cols N]
+                         [num_bytes]
+
+Generate a random lookup table as ca65 .byte source.
+
+positional arguments:
+  num_bytes       Total number of bytes to generate (default: 256)
+
+options:
+  -h, --help      show this help message and exit
+  --seed HEX/INT  Xorshift32 seed, 1 to 0xFFFFFFFF (e.g. 0x12345678); random
+                  if omitted
+  --segment NAME  Output segment name (default: RODATA)
+  --label NAME    Output label (default: RND_&lt;byte_count&gt;)
+  --cols N        Values per output line (default: 16)
+
+Operation and algorithm:
+  1. 32-bit Xorshift32
+     A fast pseudorandom generator with a long period. If no seed is provided,
+     a seed from 1 to 0xFFFFFFFF is generated with Python's secrets module.
+
+  2. Fisher-Yates (Knuth) shuffle
+     Start with an array containing every value from 0 to 255, then swap each
+     element from the end with a random position. This creates a permutation
+     containing each value exactly once. Using state % (i+1) introduces slight
+     modulo bias. A 32-bit seed can produce only a tiny fraction of all 256!
+     possible permutations. This is not suitable for cryptographic use.
+
+  3. Block output
+     Generate and output new 256-byte permutations until the requested
+     num_bytes is reached. Use only the required prefix of the final block.
+     Values may repeat across blocks.
+
+Examples:
+  python3 ca65_rnd_table.py 256                      # 256-byte random table
+  python3 ca65_rnd_table.py 256 --seed 0x12345678    # Reproducible output
+  python3 ca65_rnd_table.py 512 --label RND_TABLE    # Set label and size</code></pre>
+                    <pre><code>$ uv run nes_dungeon_sim_aabb.py --help
+usage: nes_dungeon_sim_aabb.py [-h] [--minw N] [--minh N] [--maxw N]
+                               [--maxh N] [--attempt N] [--maxroom N] [--sim]
+                               [SEED]
+
+NES-style dungeon generator (AABB rejection)
+
+positional arguments:
+  SEED         Random seed, 0-255 (random if omitted)
+
+options:
+  -h, --help   show this help message and exit
+  --minw N     Minimum room width, including walls (default: 4)
+  --minh N     Minimum room height, including walls (default: 4)
+  --maxw N     Maximum room width, including walls (default: 16)
+  --maxh N     Maximum room height, including walls (default: 16)
+  --attempt N  Consecutive failed placement attempts allowed; reset after
+               success (default: 80)
+  --maxroom N  Maximum rooms to connect; additional rooms remain isolated
+               (default: 8)
+  --sim        Collect statistics across all 256 seeds
+
+Examples:
+  python3 nes_dungeon_sim_aabb.py                    # Random seed
+  python3 nes_dungeon_sim_aabb.py 42                 # Specify a seed
+  python3 nes_dungeon_sim_aabb.py --sim              # Statistics for all 256 seeds
+  python3 nes_dungeon_sim_aabb.py --sim --attempt 5  # Shallow floor (fewer rooms)
+
+Randomly place non-overlapping rooms (rejecting overlaps) and connect them in
+coordinate order with L-shaped corridors. Each corridor checks both possible
+routes in advance and uses the one that crosses fewer walls.
+The RNG uses only 8-bit lookup tables, like an NES-style implementation.</code></pre>
+                    <pre><code>$ uv run nes_dungeon_sim_grid.py --help
+usage: nes_dungeon_sim_grid.py [-h] [--minw N] [--minh N] [--maxw N]
+                               [--maxh N] [--sim]
+                               [SEED]
+
+NES-style dungeon generator (grid layout)
+
+positional arguments:
+  SEED        Random seed, 0-255 (random if omitted)
+
+options:
+  -h, --help  show this help message and exit
+  --minw N    Minimum room width, including walls (default: 4)
+  --minh N    Minimum room height, including walls (default: 4)
+  --maxw N    Maximum room width, including walls (default: 8)
+  --maxh N    Maximum room height, including walls (default: 8)
+  --sim       Collect statistics across all 256 seeds
+
+Examples:
+  python3 nes_dungeon_sim_grid.py            # Random seed
+  python3 nes_dungeon_sim_grid.py 42         # Specify a seed
+  python3 nes_dungeon_sim_grid.py --sim      # Statistics for all 256 seeds
+
+Divide the map into a fixed 4x3 grid and probabilistically create rooms and
+connect adjacent rooms. The RNG uses only 8-bit lookup tables, like an
+NES-style implementation.</code></pre>
+                    <pre><code>$ uv run font2png.py --help
+usage: font2png.py [-h] [--txt | --safetxt] [-o DIR]
+                   [--ascii | --sjis | --glyphs | --fullwidth | --halfwidth | --all | --subset]
+                   fontfile
+
+Generate an 8x8-tile PNG from a font. The PNG defines the glyph order; any optional text output matches it one-to-one.
+Choose at most one character set option (--ascii, etc.). Defaults to --glyphs.
+
+positional arguments:
+  fontfile              Input font file (.ttf / .otf)
+
+options:
+  -h, --help            show this help message and exit
+  --txt                 Write a text file in the same order as the PNG (no
+                        substitutions; control characters are preserved)
+  --safetxt             Write a display-safe text file in the same order as
+                        the PNG (control characters become control pictures;
+                        missing glyphs become □ (U+25A1))
+  -o DIR, --output-dir DIR
+                        Output directory (default: current directory; created
+                        if missing)
+  --ascii               Characters U+0000-U+007F
+  --sjis                Characters representable in CP932 (Shift_JIS)
+  --glyphs              All characters with glyphs in the font (default)
+  --fullwidth           Full-width characters (East Asian Width F/W)
+  --halfwidth           Half-width characters (East Asian Width Na/H)
+  --all                 All BMP characters (U+0000-U+FFFF)
+  --subset              Built-in 256-character NES subset
+
+Examples:
+  python3 font2png.py font.ttf --subset            # Built-in 256-character NES subset
+  python3 font2png.py font.ttf --ascii --safetxt   # ASCII and a display-safe text file
+  python3 font2png.py font.ttf --sjis -o out/      # Shift_JIS characters to out/</code></pre>
+                    <pre><code>$ uv run mml_quantize.py --help
+usage: mml_quantize.py [-h] [--simple | --exact | --judge] [--fill]
+                       [--transpose N] [--minor {natural,harmonic,melodic}]
+                       file
+
+MML Quantizer &amp; Simplifier (quantize to {2,4,8,16} note values). Choose one output mode: --simple / --exact / --judge (or see the default below).
+
+positional arguments:
+  file                  Path to input MML file
+
+options:
+  -h, --help            show this help message and exit
+  --simple              Use rounded quantization (compact, natural-sounding
+                        output)
+  --exact               Use lossless GCD-based quantization
+  --judge               Compare simple and exact per channel; show ok/drift
+                        (exit 0=match, 1=drift)
+  --fill                Append rests to shorter channels (applies only to
+                        selected mode; simple only with --judge)
+  --transpose N         Transpose by this many semitones (positive=up,
+                        negative=down)
+  --minor {natural,harmonic,melodic}
+                        Convert C major to minor (applied after --transpose)
+
+Default behavior:
+  Output simple only if it matches exact for every channel.
+  If there is drift, print "LOSSY" and exit with code 1.
+
+Examples:
+  python3 mml_quantize.py song.mml --simple
+  python3 mml_quantize.py song.mml --exact --fill
+  python3 mml_quantize.py song.mml --judge
+  python3 mml_quantize.py song.mml --transpose -2 --minor natural
+
+For the input MML format (including channel lines and C&lt;number&gt; resolution
+tokens), see the description at the top of this file.</code></pre>
                 </article>
 
                 <article>
@@ -157,6 +385,214 @@
                     </h3>
                     <p>MIDI、MML、簡易 ASCII 楽譜文字列を相互変換するコマンドラインツール。</p>
                     <p><small>Python / MIDI / MML</small></p>
+                    <pre><code>$ uv run midi2mml.py --help
+usage: midi2mml.py [-h] [-c N] [-m M] [--split] [-o DIR] [--inspect] [--usage]
+                   [--spec TOPIC] [--debug] [--correct] [--grid 1/N]
+                   [--meter N/D|auto] [--triplet {merge,round}]
+                   [--percussion {exclude,include}] [--legato RATIO]
+                   [--drop-shorter 1/N] [--error-on CATS]
+                   [midi_file]
+
+Convert MIDI to per-channel monophonic MML (pitch and duration only). The default is lossless; --correct normalizes performance timing and may discard information.
+When multiple tracks (one per channel) are written to stdout, separate them with a line containing only ;.
+(Single-channel output with -c and individual files with --split do not include separators.)
+
+Run with --spec mml to display the MML notation.
+
+positional arguments:
+  midi_file             Input MIDI file (.mid)
+
+options:
+  -h, --help            show this help message and exit
+  -c N, --channel N     Channel to output (1-16; drums are channel 10)
+  -m M, --min-mml-length M
+                        Note-value denominator for one unit (power of two,
+                        1-256; default: 8). All values are lossless; only the
+                        number of ties and digits changes. Use --inspect for
+                        guidance.
+  --split               Write &lt;input&gt;-chNN.mml for each channel to -o DIR;
+                        print each written path to stdout.
+  -o DIR, --output DIR  Output directory for --split (created if missing;
+                        existing files are overwritten).
+  --inspect             Print diagnostics to stderr and suggested options (if
+                        needed) to stdout.
+  --usage               Show brief usage and exit
+  --spec TOPIC          Show the specification and exit (mml: MML notation)
+  --debug               Show a traceback on error
+
+Correction (requires --correct; best-effort and may discard information):
+  --correct             Enable correction: snap note onsets and durations to a
+                        beat grid and remove very short notes.
+  --grid 1/N            Grid resolution as a subdivision of a whole note (e.g.
+                        1/16); inferred from data by default.
+  --meter N/D|auto      Meter (e.g. 4/4, 6/8); auto (default) uses MIDI
+                        metadata or 4/4.
+  --triplet {merge,round}
+                        How to handle triplets; if detected without a choice,
+                        stop (exit code 3). merge=combine three notes into one
+                        (keep the first pitch); round=quantize to a binary
+                        grid (keep notes, alter rhythm).
+  --percussion {exclude,include}
+                        Exclude (default) or include the drum channel (10)
+                        when estimating the grid.
+  --legato RATIO        Connect a note to the next when duration / onset
+                        interval is at least this ratio (staccato correction;
+                        default: 0.7).
+  --drop-shorter 1/N    Remove notes shorter than 1/N of a whole note;
+                        inferred from data by default.
+  --error-on CATS       Stop if any correction of the listed categories occurs
+                        (comma-separated: drop, triplet, offgrid, meter,
+                        grid).
+
+Exit codes: 0=success / 1=processing failure / 2=invalid usage / 3=correction needs user input (no MML output)</code></pre>
+                    <pre><code>$ uv run mml2score.py --help
+usage: mml2score.py [-h] [-i FILE] [-e TEXT] [-o FILE] [--track N]
+                    [--unit auto|N] [--middle-c N] [--invert-octave]
+                    [--encode {escaped,spaces,binary}] [--loop] [--nul]
+                    [--lossy] [--usage] [--spec TOPIC]
+
+Convert monophonic MML to a one-line ASCII score.
+Write only the score to stdout (or -o); warnings, reports, and errors go to stderr.
+
+Use --spec mml and --spec score to display the MML and score notation.
+
+options:
+  -h, --help            show this help message and exit
+  -o FILE, --output FILE
+                        Output file (overwrites existing files); stdout by
+                        default
+  --track N             Track to convert (1-based) from input separated by ;.
+                        Required when input has multiple tracks.
+  --unit auto|N         Score unit. auto (default) uses the GCD of all
+                        durations and is lossless; N fixes one unit to 1/N
+                        note (inexact durations are rounded).
+  --middle-c N          MML octave number for middle C (MIDI note 60; default:
+                        4). Can shift all notes into range.
+  --invert-octave       Reverse the direction of &lt; and &gt;
+  --encode {escaped,spaces,binary}
+                        Score representation: escaped writes rests and control
+                        codes as \$HH (default); spaces uses literal spaces
+                        for rests; binary writes notes and controls as raw
+                        bytes (backslash note remains \$5C).
+  --loop                Append CR (\$0D) to loop to the beginning, equivalent
+                        to leading MML L
+  --nul                 Append NUL (\$00) as an explicit end marker; not added
+                        when looping
+  --lossy               Accept transformations that change note content and
+                        continue
+  --usage               Show brief usage and exit
+  --spec TOPIC          Show the specification and exit (mml: MML notation /
+                        score: score notation)
+
+Input (choose one):
+  -i FILE, --input FILE
+                        Input MML file (UTF-8); use - for stdin
+  -e TEXT, --expr TEXT  MML expression supplied on the command line
+
+Performance commands not represented in the score (t, v, q, @, etc.) are ignored and reported.
+By default, conversion stops and asks for confirmation if note content would change
+(chord reduction, out-of-range notes becoming rests, selecting one of multiple tracks,
+or ignoring L commands after the first). Use --lossy to accept and continue.
+
+Exit codes: 0=success / 1=processing failure / 2=invalid usage / 3=conversion needs user input (no score output)
+
+Examples:
+  mml2score.py -e 'l8 o4 cdef'
+  mml2score.py -i song.mml -o song.txt --encode spaces
+  mml2score.py -i song.mml --track 2 --unit 48</code></pre>
+                    <pre><code>$ uv run score2mml.py --help
+usage: score2mml.py [-h] [-i FILE] [-e TEXT] [-o FILE] [--unit N]
+                    [--middle-c N] [--lossy] [--spec TOPIC]
+
+Convert a score string back to monophonic MML.
+Write only MML to stdout (or -o); warnings, reports, and errors go to stderr.
+
+Use --spec mml and --spec score to display the MML and score notation.
+
+options:
+  -h, --help            show this help message and exit
+  -o FILE, --output FILE
+                        Output file (overwrites existing files); stdout by
+                        default
+  --unit N              Write one unit as a 1/N whole note (default: 16)
+  --middle-c N          MML octave number for MIDI note 60 (middle C; default:
+                        4)
+  --lossy               Remove connections MML cannot represent and continue
+  --spec TOPIC          Show the specification and exit (mml: MML notation /
+                        score: score notation)
+
+Input (choose one):
+  -i FILE, --input FILE
+                        Input score file (read as bytes); use - for stdin
+  -e TEXT, --expr TEXT  Score supplied directly on the command line
+
+Scores have no intrinsic unit length. Use --unit N to write one unit as a 1/N whole note.
+Relative durations are the same for any N; only the notation changes.
+By default, conversion stops and identifies scores MML cannot represent
+(a rest connected to another event, or a loop while connection mode is active; exit code 3).
+Use --lossy to accept and remove those connections.
+
+Exit codes: 0=success / 1=processing failure / 2=invalid usage / 3=conversion needs user input (no MML output)
+
+Examples:
+  score2mml.py -e '\$02AAA\$03BC'
+  score2mml.py -i song.txt -o song.mml --unit 48</code></pre>
+                    <pre><code>$ uv run scoreplay.py --help
+usage: scoreplay.py [-h] [-o FILE] [--vol N] [--speed PERCENT] [--max-loops N]
+                    [--max-sec S] [--usage] [--spec TOPIC] [-i FILE] [-e TEXT]
+                    [--tick N] [--gain N]
+
+Interpret a score string according to its format and play it or write it to a file (multiple tracks supported).
+
+options:
+  -h, --help            show this help message and exit
+  -o FILE, --output FILE
+                        Output file (.wav / .mp3 / .ogg; overwrites existing
+                        files); play directly by default
+  --vol N               Master volume, 0-100 (default: 100)
+  --speed PERCENT       Speed for all tracks (percent, 1-1000, default: 100).
+                        50=half speed, 200=double speed; opposite direction
+                        from --tick.
+  --max-loops N         Maximum number of CR loops (default: 3; 0 means
+                        unlimited)
+  --max-sec S           Maximum generated duration in seconds (default: 600;
+                        always enforced)
+  --usage               Show brief usage and exit
+  --spec TOPIC          Show the specification and exit (score: score
+                        notation)
+  -i FILE, --input FILE
+                        Input score file (read as bytes); use - for stdin (one
+                        track only)
+  -e TEXT, --expr TEXT  Score supplied directly on the command line
+  --tick N              Duration of one unit in 1/60-second ticks (default:
+                        30); larger is slower
+  --gain N              Track volume, 0-100 (default: 50)
+
+Use --spec score to display the score notation.
+
+Tracks:
+  For track 2 and later, append the track number to option names (-i2 -e2 --tick2 --gain2 ...).
+  --tick (unit duration) and --gain (volume) are per-track; --speed and --vol apply globally.
+  A larger --tick is slower, while a larger --speed is faster.
+
+Examples:
+  uv run scoreplay.py -e 'AAAA'                  Play directly (A four times)
+  uv run scoreplay.py -i track1.txt -i2 track2.txt
+  uv run scoreplay.py -i track1.txt --tick 16 --gain 80 -i2 track2.txt --tick2 16 --gain2 40
+  uv run scoreplay.py -i input.txt --speed 50    Play at half speed (typical: 25 50 100 150 200)
+  uv run scoreplay.py -i input.txt -o out.wav    Write a WAV file (.mp3 / .ogg also supported)
+  cat track1.txt | uv run scoreplay.py -i -      Read from stdin (one track only)
+
+Exit codes: 0=success / 1=I/O or playback failure / 2=invalid usage</code></pre>
+                    <pre><code>$ uv run build_spec.py --help
+build_spec.py -- Build each tool's --spec text from the English Markdown documentation.
+
+The English documents are the source of truth; each Python file's SPEC_TEXTS block is generated.
+
+Run these commands from the repository root:
+  python3 debug/build_spec.py --show TOOL TOPIC   Print generated specification text
+  python3 debug/build_spec.py --apply             Update embedded text in all four scripts
+  python3 debug/build_spec.py --check             Check embedded text against the source documents</code></pre>
                 </article>
 
                 <article>
@@ -167,6 +603,30 @@
                     </h3>
                     <p>No-Intro DAT ファイルを Hasheous と照合するツール。</p>
                     <p><small>Python / Hasheous</small></p>
+                    <pre><code>$ uv run dat-sha1-hasheous.py --help
+usage: dat-sha1-hasheous.py [-h] --dat DAT [--out-dir OUT_DIR]
+                            [--endpoint ENDPOINT]
+
+DAT SHA-1 → Hasheous MCP → JSONL
+
+options:
+  -h, --help           show this help message and exit
+  --dat DAT            No-Intro DAT path
+  --out-dir OUT_DIR    JSONL output directory
+  --endpoint ENDPOINT  MCP endpoint (default: https://hasheous.org/api/v1/Mcp)</code></pre>
+                    <pre><code>$ uv run probe_hasheous.py --help
+usage: probe_hasheous.py [-h] --sha1 SHA1 [--endpoint ENDPOINT] [--out OUT]
+                         [--tool TOOL] [--no-details]
+
+Probe Hasheous MCP with one SHA-1 and save raw JSON results.
+
+options:
+  -h, --help           show this help message and exit
+  --sha1 SHA1          ROM/file SHA-1 (40 hexadecimal characters)
+  --endpoint ENDPOINT  MCP endpoint (default: https://hasheous.org/api/v1/Mcp)
+  --out OUT            output directory (default: ./hasheous_probe)
+  --tool TOOL          lookup tool name
+  --no-details         do not call get_game_details even if a game ID is found</code></pre>
                 </article>
 
                 <article>
@@ -180,6 +640,10 @@
                         ビューア。フォルダ名・種類・拡張子でフィルタ可能。NAS 等で HTTP 配信して使う想定。
                     </p>
                     <p><small>HTML / 静的</small></p>
+                    <p><a href="./demo/cross/">▶ デモを開く</a></p>
+                    <pre><code>$ uv run update.py --help
+update.py does not implement --help.
+Running the script rebuilds media.json and update.log in its project folder.</code></pre>
                 </article>
 
                 <article>
@@ -206,6 +670,10 @@
                         メタタイル編集、反転・回転・Undo/Redo、複数形式エクスポート対応。
                     </p>
                     <p><small>HTML / NES / Webアプリ</small></p>
+                    <p>
+                        <a href="./demo/pixel/">▶ デモを開く（日本語）</a> /
+                        <a href="./demo/pixel/index-en.html">English</a>
+                    </p>
                 </article>
 
                 <article>
