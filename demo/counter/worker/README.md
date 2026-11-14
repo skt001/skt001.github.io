@@ -1,50 +1,48 @@
-# ASCII Counter Worker
+# ASCII カウンター Worker
 
-This Cloudflare Worker provides the counter API used by `../index.html`.
-Each `GET /` request increments one shared counter and returns the count as
-plain text, for example `123`. If incrementing fails, the Worker logs the
-exception and returns `ERROR!` as a plain-text success response so the page
-can render it with `renderAscii`.
+この Cloudflare Worker は `../index.html` が使うカウンター API です。
+`GET /` を受け取るたびに共有カウンターを 1 増やし、カウントを `123` のような
+プレーンテキストで返します。カウントの更新に失敗した場合は、Worker が例外をログに
+記録し、ページが `renderAscii` で表示できるように、プレーンテキストの成功応答として
+`ERROR!` を返します。
 
-The counter counts requests, not unique people. Reloading the page, automated
-requests, and repeated visits all increment it. A single SQLite-backed Durable
-Object keeps the count consistent across requests. Its class is declared with
-Wrangler's `exports` configuration; this project does not use `migrations`.
+カウントするのは訪問者数ではなくリクエスト数です。ページの再読み込み、自動化された
+リクエスト、繰り返しの訪問もすべて加算されます。SQLite ベースの Durable Object が 1 つで
+カウントを保持するため、リクエスト間で整合性が保たれます。クラスは Wrangler の
+`exports` 設定で宣言しており、このプロジェクトでは `migrations` を使いません。
 
-## Deploy
+## デプロイ
 
-Requirements: a Cloudflare account and Node.js with `npx` available.
+必要なもの: Cloudflare アカウントと、`npx` が使える Node.js。
 
-From this directory, authenticate and deploy:
+このディレクトリで、ログインしてデプロイします。
 
 ```sh
 npx wrangler login
 npx wrangler deploy
 ```
 
-Wrangler prints the deployed `workers.dev` URL. Use that URL directly, for
-example:
+Wrangler が表示するデプロイ先の `workers.dev` URL をそのまま使います。例:
 
 ```text
-https://ascii-visitor-counter.<your-subdomain>.workers.dev/
+https://counter.<あなたのサブドメイン>.workers.dev/
 ```
 
-The endpoint permits cross-origin GET requests so the GitHub Pages site can
-call it.
+GitHub Pages のサイトから呼び出せるよう、このエンドポイントは別オリジンからの GET
+リクエストを許可しています。
 
-## Test
+## 動作確認
 
-To run locally from this directory:
+このディレクトリでローカル実行します。
 
 ```sh
 npx wrangler dev
 ```
 
-Then request `http://localhost:8787/`. Each successful request returns only
-an integer as plain text, increasing by one. If the counter operation fails,
-the response body is `ERROR!`. After deployment, the same check can be made
-with:
+`http://localhost:8787/` にリクエストすると、成功時は整数だけがプレーンテキストで返り、
+リクエストのたびに 1 ずつ増えます。カウンターの処理に失敗した場合の応答本文は `ERROR!` です。
+デプロイ後は、次のコマンドで同じ確認ができます。
 
 ```sh
-curl https://ascii-visitor-counter.<your-subdomain>.workers.dev/
+curl https://counter.<あなたのサブドメイン>.workers.dev/
 ```

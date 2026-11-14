@@ -85,6 +85,12 @@
                     <li>
                         <a href="./demo/counter/">ASCII Counter</a> —
                         Cloudflare Worker の訪問リクエスト数を ASCII アートで表示
+                        （<a href="https://github.com/skt001/cloudflare-simple-counter" target="_blank" rel="noopener">ソース</a>）
+                    </li>
+                    <li>
+                        <a href="https://uploader.skt001.workers.dev/" target="_blank" rel="noopener">Simple Uploader</a> —
+                        Cloudflare Workers + D1 だけで動く日本語アップローダー
+                        （<a href="https://github.com/skt001/cloudflare-simple-uploader" target="_blank" rel="noopener">ソース</a>）
                     </li>
                     <li>
                         <a href="./demo/cross/">Cross-Folder Media Viewer デモ</a> —
@@ -116,6 +122,49 @@
                     </h3>
                     <p>本サイト。Raspberry Pi 関連の手順書・パッチ解説を Markdown で公開。</p>
                     <p><small>ドキュメント / GitHub Pages</small></p>
+                </article>
+
+                <article>
+                    <h3>
+                        <a href="https://github.com/skt001/cloudflare-simple-counter" target="_blank" rel="noopener"
+                            >cloudflare-simple-counter</a
+                        >
+                    </h3>
+                    <p>
+                        Cloudflare Workers + Durable Objects のリクエスト数カウンターと、数値を 8x8 ピクセルフォントの
+                        ASCII アート画像で表示する静的ページ。MIT ライセンス。
+                    </p>
+                    <p><small>JavaScript / Cloudflare Workers / Durable Objects</small></p>
+                    <p><a href="./demo/counter/">▶ デモを開く</a></p>
+                    <pre><code>$ cd worker
+$ npx wrangler deploy</code></pre>
+                </article>
+
+                <article>
+                    <h3>
+                        <a href="https://github.com/skt001/cloudflare-simple-uploader" target="_blank" rel="noopener"
+                            >cloudflare-simple-uploader</a
+                        >
+                    </h3>
+                    <p>
+                        Cloudflare Workers と D1 だけで動く日本語のアップローダー。1ファイル100MiB、ダウンロードパスワード・削除キー、
+                        FTP 風の対話 CLI（Python 標準ライブラリのみ）付き。MIT ライセンス。
+                    </p>
+                    <p><small>JavaScript / Python / Cloudflare Workers / D1</small></p>
+                    <p><a href="https://uploader.skt001.workers.dev/" target="_blank" rel="noopener">▶ デモを開く</a></p>
+                    <pre><code>$ python3 uploader.py --help
+usage: uploader.py [-h] [--url URL] {list,put,get,delete} ...
+
+Cloudflare uploader API client
+
+positional arguments:
+  {list,put,get,delete}
+
+options:
+  -h, --help            show this help message and exit
+  --url URL             Uploader origin, e.g. https://example.workers.dev
+                        (default: $UPLOADER_URL,
+                        ~/.config/uploader/config.json, ~/.uploader)</code></pre>
                 </article>
 
                 <article>
@@ -738,96 +787,22 @@ Running the script rebuilds media.json and update.log in its project folder.</co
                     同じ URL を複数回呼び出した場合も、そのたびに増加します。
                 </p>
                 <p>
-                    デプロイには、Worker の処理を書く <code>src/index.js</code> と、Worker 名や Durable Object
-                    のバインディング、SQLite ストレージを設定する <code>wrangler.jsonc</code>
-                    の2つのファイルが必要です。どちらか一方だけではデプロイできません。
+                    ソースは
+                    <a href="https://github.com/skt001/cloudflare-simple-counter" target="_blank" rel="noopener"
+                        >cloudflare-simple-counter</a
+                    >
+                    にあります。Node.js と <code>npx</code> を用意し、リポジトリを取得して <code>worker/</code>
+                    をデプロイします。
                 </p>
-                <p>Node.js と <code>npx</code> を用意し、まず作業用フォルダーを作成します。</p>
-                <pre><code>mkdir -p ascii-visitor-counter/src
-cd ascii-visitor-counter</code></pre>
-                <p><strong>ファイル1：<code>src/index.js</code></strong>（Worker の処理）</p>
-                <pre><code>import { DurableObject } from "cloudflare:workers";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Cache-Control": "no-store",
-};
-
-const textHeaders = {
-  ...corsHeaders,
-  "Content-Type": "text/plain; charset=utf-8",
-};
-
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-
-    if (url.pathname !== "/") {
-      return new Response("Not found", { status: 404 });
-    }
-
-    if (request.method === "OPTIONS") {
-      return new Response(null, {
-        status: 204,
-        headers: corsHeaders,
-      });
-    }
-
-    if (request.method !== "GET") {
-      return new Response("Method not allowed", {
-        status: 405,
-        headers: { ...corsHeaders, Allow: "GET, OPTIONS" },
-      });
-    }
-
-    try {
-      const id = env.COUNTER.idFromName("global");
-      const counter = env.COUNTER.get(id);
-      const count = await counter.increment();
-
-      return new Response(String(count), { headers: textHeaders });
-    } catch (error) {
-      console.error("Counter increment failed:", error);
-      return new Response("ERROR!", { headers: textHeaders });
-    }
-  },
-};
-
-export class Counter extends DurableObject {
-  async increment() {
-    const count = (await this.ctx.storage.get("count")) ?? 0;
-    const nextCount = count + 1;
-    await this.ctx.storage.put("count", nextCount);
-    return nextCount;
-  }
-}</code></pre>
-                <p><strong>ファイル2：<code>wrangler.jsonc</code></strong>（作業用フォルダー直下に保存する設定）</p>
-                <pre><code>{
-  "name": "ascii-visitor-counter",
-  "main": "src/index.js",
-  "compatibility_date": "2026-10-30",
-  "durable_objects": {
-    "bindings": [
-      {
-        "name": "COUNTER",
-        "class_name": "Counter"
-      }
-    ]
-  },
-  "exports": {
-    "Counter": {
-      "type": "durable-object",
-      "storage": "sqlite"
-    }
-  }
-}</code></pre>
-                <p>2つのファイルを保存したら、作業用フォルダーで初回ログインとデプロイを実行します。</p>
-                <pre><code>npx wrangler login
+                <pre><code>git clone https://github.com/skt001/cloudflare-simple-counter.git
+cd cloudflare-simple-counter/worker
+npx wrangler login
 npx wrangler deploy</code></pre>
                 <p>
-                    デプロイ後に表示される <code>https://ascii-visitor-counter.&lt;サブドメイン&gt;.workers.dev/</code>
-                    の URL を使います。
+                    デプロイ後に表示される <code>https://counter.&lt;サブドメイン&gt;.workers.dev/</code>
+                    の URL が、カウンター API です。表示ページ側は、リポジトリ直下の <code>config.example.js</code> を
+                    <code>config.js</code> にコピーし、この URL に書き換えて使います。詳しくはリポジトリの
+                    <code>README.md</code> と <code>worker/README.md</code> を参照してください。
                 </p>
 
                 <h3>3. Worker からカウント数値を取得する</h3>
