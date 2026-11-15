@@ -84,13 +84,14 @@
                     </li>
                     <li>
                         <a href="./demo/counter/">ASCII Counter</a> —
-                        Cloudflare Worker の訪問リクエスト数を ASCII アートで表示
+                        Cloudflare Worker へのリクエスト数を ASCII アートで表示
                         （<a href="https://github.com/skt001/cloudflare-simple-counter" target="_blank" rel="noopener">ソース</a>）
                     </li>
                     <li>
                         <a href="https://uploader.skt001.workers.dev/" target="_blank" rel="noopener">Simple Uploader</a> —
                         Cloudflare Workers + D1 だけで動く日本語アップローダー
-                        （<a href="https://github.com/skt001/cloudflare-simple-uploader" target="_blank" rel="noopener">ソース</a>）
+                        （<a href="https://github.com/skt001/cloudflare-simple-uploader" target="_blank" rel="noopener">ソース</a> /
+                        <a href="https://github.com/skt001/cloudflare-simple-uploader/blob/main/ADMIN.md" target="_blank" rel="noopener">SQL管理手順</a>）
                     </li>
                     <li>
                         <a href="./demo/cross/">Cross-Folder Media Viewer デモ</a> —
@@ -135,7 +136,7 @@
                         ASCII アート画像で表示する静的ページ。MIT ライセンス。
                     </p>
                     <p><small>JavaScript / Cloudflare Workers / Durable Objects</small></p>
-                    <p><a href="./demo/counter/">▶ デモを開く</a></p>
+                    <p><a href="./demo/counter/">▶ デモページを開く</a></p>
                     <pre><code>$ cd worker
 $ npx wrangler deploy</code></pre>
                 </article>
@@ -150,8 +151,12 @@ $ npx wrangler deploy</code></pre>
                         Cloudflare Workers と D1 だけで動く日本語のアップローダー。1ファイル100MiB、ダウンロードパスワード・削除キー、
                         FTP 風の対話 CLI（Python 標準ライブラリのみ）付き。MIT ライセンス。
                     </p>
+                    <p>
+                        管理画面はなく、運用管理はD1へのSQLで行います
+                        （<a href="https://github.com/skt001/cloudflare-simple-uploader/blob/main/ADMIN.md" target="_blank" rel="noopener">管理手順</a>）。
+                    </p>
                     <p><small>JavaScript / Python / Cloudflare Workers / D1</small></p>
-                    <p><a href="https://uploader.skt001.workers.dev/" target="_blank" rel="noopener">▶ デモを開く</a></p>
+                    <p><a href="https://uploader.skt001.workers.dev/" target="_blank" rel="noopener">▶ デモページを開く</a></p>
                     <pre><code>$ python3 uploader.py --help
 usage: uploader.py [-h] [--url URL] {list,put,get,delete} ...
 
