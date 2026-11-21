@@ -1,3 +1,4 @@
+successfully downloaded text file (SHA: 2bf04652cb22031deed903119e6af1804a2cd2a1)
 <!doctype html>
 <html lang="ja">
     <head>
@@ -94,6 +95,12 @@
                         <a href="https://github.com/skt001/cloudflare-simple-uploader/blob/main/ADMIN.md" target="_blank" rel="noopener">SQL管理手順</a>）
                     </li>
                     <li>
+                        <a href="https://simple-2ch.skt001.workers.dev/" target="_blank" rel="noopener">Simple 2ch</a> —
+                        Cloudflare Workers + D1 だけで動く 2ch 形式の1スレッド掲示板
+                        （<a href="https://github.com/skt001/cloudflare-simple-2ch" target="_blank" rel="noopener">ソース</a> /
+                        <a href="https://github.com/skt001/cloudflare-simple-2ch/blob/main/ADMIN.md" target="_blank" rel="noopener">SQL管理手順</a>）
+                    </li>
+                    <li>
                         <a href="./demo/cross/">Cross-Folder Media Viewer デモ</a> —
                         複数フォルダ横断の写真・動画ビューア
                     </li>
@@ -170,6 +177,24 @@ options:
   --url URL             Uploader origin, e.g. https://example.workers.dev
                         (default: $UPLOADER_URL,
                         ~/.config/uploader/config.json, ~/.uploader)</code></pre>
+                </article>
+
+                <article>
+                    <h3>
+                        <a href="https://github.com/skt001/cloudflare-simple-2ch" target="_blank" rel="noopener"
+                            >cloudflare-simple-2ch</a
+                        >
+                    </h3>
+                    <p>
+                        Cloudflare Workers と D1 だけで動く、2ch 形式の1スレッド限定掲示板。HTML・dat（Shift_JIS）・JSON API の
+                        3つのインターフェースが同じ投稿データを参照し、専用ブラウザからの投稿にも対応します。MIT ライセンス。
+                    </p>
+                    <p>
+                        管理画面はなく、運用管理はD1へのSQLで行います
+                        （<a href="https://github.com/skt001/cloudflare-simple-2ch/blob/main/ADMIN.md" target="_blank" rel="noopener">管理手順</a>）。
+                    </p>
+                    <p><small>JavaScript / Cloudflare Workers / D1</small></p>
+                    <p><a href="https://simple-2ch.skt001.workers.dev/" target="_blank" rel="noopener">▶ デモページを開く</a></p>
                 </article>
 
                 <article>
