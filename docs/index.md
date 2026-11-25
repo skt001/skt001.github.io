@@ -8,7 +8,7 @@ Raspberry Pi 向け手順書・パッチ解説の公開ページです。
 
 **現在の配信:** GitHub Pages版
 &nbsp;|&nbsp;
-[Cloudflare版（概要・デモ）に戻る](https://skt001-github-io.skt001.workers.dev/)
+[Cloudflare版（概要・デモ）に戻る](https://www.skt001.workers.dev/)
 
 ## 日本語
 
