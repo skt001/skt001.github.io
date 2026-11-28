@@ -237,7 +237,7 @@
       } else if (t.dataset.typeToggle === "video") {
         state.showVideos = t.checked;
         render();
-      } else if (t.dataset.extToggle) {
+      } else if (t.dataset.extToggle !== undefined) {
         if (t.checked) state.hiddenExts.delete(t.dataset.extToggle);
         else state.hiddenExts.add(t.dataset.extToggle);
         render();

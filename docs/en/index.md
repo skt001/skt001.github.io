@@ -7,7 +7,8 @@ title: Raspberry Pi Documentation
 This repository contains Raspberry Pi guides and a patch overview section.
 
 - [Bonsai (llama.cpp) Raspberry Pi 5 Optimization Guide v2](bonsai-crosscompile-rpi5.md)
-- [Raspberry Pi Monitoring Complete Manual](pi-stats-manual.md)
+- [Raspberry Pi Monitoring Complete Manual (lighttpd)](pi-stats-lighttpd.md)
+- [Raspberry Pi Monitoring Complete Manual (Caddy)](pi-stats-caddy.md)
 - [GPi Case 2 CM5 Patch Overview](gpicase2-cm5-patch.md)
 - [日本語版はこちら](../ja/index.md)
 

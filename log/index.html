@@ -90,6 +90,16 @@
         <script>
             const MAX_LOGS = 100;
 
+            // Log fields (URI, messages, ...) are not trusted: escape before innerHTML.
+            function esc(s) {
+                return String(s)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#39;");
+            }
+
             async function fetchLogFile(filename) {
                 try {
                     const response = await fetch(filename);
@@ -125,7 +135,7 @@
                                   const time = log.ts ? new Date(log.ts * 1000).toLocaleString() : log.time || "-";
                                   const level = log.level || "-";
                                   const msg = log.msg || JSON.stringify(log);
-                                  return `<tr><td>${time}</td><td>${level}</td><td>${msg}</td></tr>`;
+                                  return `<tr><td>${esc(time)}</td><td>${esc(level)}</td><td>${esc(msg)}</td></tr>`;
                               })
                               .join("")
                         : '<tr><td colspan="3">ログなし</td></tr>';
@@ -171,11 +181,11 @@
                             const remoteIp = log.request?.remote_ip || "-";
 
                             return `<tr>
-                    <td>${time}</td>
-                    <td>${method}</td>
-                    <td>${uri}</td>
-                    <td>${status}</td>
-                    <td>${remoteIp}</td>
+                    <td>${esc(time)}</td>
+                    <td>${esc(method)}</td>
+                    <td>${esc(uri)}</td>
+                    <td>${esc(status)}</td>
+                    <td>${esc(remoteIp)}</td>
                 </tr>`;
                         })
                         .join("");

@@ -525,7 +525,7 @@
         <li><strong>CHR:</strong> NES character ROM (standard 8KB)</li>
         <li><strong>NES:</strong> NES ROM file (CHR auto-extracted)</li>
         <li><strong>BIN:</strong> Binary file</li>
-        <li><strong>PNG:</strong> Export as image</li>
+        <li><strong>PNG:</strong> Export as an image 256px wide, with height depending on the tile count</li>
       </ul>
 
       <h3>🎨 Color Palette</h3>
@@ -914,13 +914,14 @@
 
       const prgSize = data[4] * 16384;
       const chrSize = data[5] * 8192;
+      const headerSize = 16 + ((data[6] & 0x04) ? 512 : 0);
 
       if (chrSize === 0) {
         loadStatus.textContent = 'Error: No CHR data found';
         return false;
       }
 
-      if (16 + prgSize + chrSize > data.length) {
+      if (headerSize + prgSize + chrSize > data.length) {
         loadStatus.textContent = 'Error: Invalid file size';
         return false;
       }
@@ -928,7 +929,7 @@
       const requiredSize = Math.min(chrSize, MaxTilesBoundary * 16);
       expandCHRData(requiredSize);
       chrData.fill(0);
-      chrData.set(data.slice(16 + prgSize, 16 + prgSize + requiredSize));
+      chrData.set(data.slice(headerSize + prgSize, headerSize + prgSize + requiredSize));
       
       const tileCount = requiredSize / 16;
       loadStatus.textContent = `NES loaded (PRG: ${prgSize}, CHR: ${tileCount} tiles)`;
@@ -939,9 +940,10 @@
 
     async function loadZipFile(arrayBuffer) {
       const zip = await JSZip.loadAsync(arrayBuffer);
-      const targetFile = Object.values(zip.files).find(f =>
-        f.name.endsWith(".nes") || f.name.endsWith(".chr") || f.name.endsWith(".bin")
-      );
+      const targetFile = Object.values(zip.files).find(f => {
+        const name = f.name.toLowerCase();
+        return name.endsWith(".nes") || name.endsWith(".chr") || name.endsWith(".bin");
+      });
 
       if (!targetFile) {
         loadStatus.textContent = 'Error: NES/CHR/BIN file not found in ZIP';
@@ -951,9 +953,10 @@
       const fileData = new Uint8Array(await targetFile.async("uint8array"));
       loadStatus.textContent = `ZIP extracted: ${targetFile.name}`;
 
-      if (targetFile.name.endsWith(".chr")) {
+      const targetLower = targetFile.name.toLowerCase();
+      if (targetLower.endsWith(".chr")) {
         return loadCHRFile(fileData);
-      } else if (targetFile.name.endsWith(".bin")) {
+      } else if (targetLower.endsWith(".bin")) {
         return loadCHRFile(fileData);
       } else {
         return loadNESFile(fileData);
@@ -1032,12 +1035,14 @@
       try {
         const arrayBuffer = await file.arrayBuffer();
         let success = false;
+        saveState();
 
-        if (file.name.endsWith(".zip")) {
+        const lowerName = file.name.toLowerCase();
+        if (lowerName.endsWith(".zip")) {
           success = await loadZipFile(arrayBuffer);
-        } else if (file.name.endsWith(".chr") || file.name.endsWith(".bin")) {
+        } else if (lowerName.endsWith(".chr") || lowerName.endsWith(".bin")) {
           success = loadCHRFile(new Uint8Array(arrayBuffer));
-        } else if (file.name.endsWith(".nes")) {
+        } else if (lowerName.endsWith(".nes")) {
           success = loadNESFile(new Uint8Array(arrayBuffer));
         } else {
           loadStatus.textContent = 'Error: Unsupported file format';
@@ -1045,7 +1050,6 @@
         }
 
         if (success) {
-          saveState();
           redrawAll();
           statusLeft.textContent = `Loaded ${file.name}`;
         }
@@ -1083,8 +1087,10 @@
     // CHR Grid click
     chrCanvas.addEventListener('click', (e) => {
       const rect = chrCanvas.getBoundingClientRect();
-      const x = Math.floor((e.clientX - rect.left) / 20);
-      const y = Math.floor((e.clientY - rect.top) / 20);
+      const scaleX = chrCanvas.width / rect.width;
+      const scaleY = chrCanvas.height / rect.height;
+      const x = Math.floor((e.clientX - rect.left) * scaleX / 20);
+      const y = Math.floor((e.clientY - rect.top) * scaleY / 20);
 
       const newTile = y * 16 + x;
       if (newTile >= 0 && newTile < maxTiles) {
@@ -1097,8 +1103,10 @@
     // Editor tile click
     editorCanvas.addEventListener('click', (e) => {
       const rect = editorCanvas.getBoundingClientRect();
-      const x = Math.floor((e.clientX - rect.left) / 40);
-      const y = Math.floor((e.clientY - rect.top) / 40);
+      const scaleX = editorCanvas.width / rect.width;
+      const scaleY = editorCanvas.height / rect.height;
+      const x = Math.floor((e.clientX - rect.left) * scaleX / 40);
+      const y = Math.floor((e.clientY - rect.top) * scaleY / 40);
 
       if (x >= 0 && x < 8 && y >= 0 && y < 8) {
         saveState();
@@ -1134,11 +1142,12 @@
     document.getElementById('addTilesBtn').addEventListener('click', () => {
       const newTileCount = Math.min(maxTiles + 256, MaxTilesBoundary);
       if (newTileCount !== maxTiles) {
+        const addedCount = newTileCount - maxTiles;
         expandCHRData(newTileCount * 16);
         updateTileCountUI();
         updateCHRGridCanvas();
         redrawAll();
-        statusLeft.textContent = `Added ${newTileCount - maxTiles} tiles (total: ${maxTiles})`;
+        statusLeft.textContent = `Added ${addedCount} tiles (total: ${maxTiles})`;
       }
     });
 
